@@ -1,0 +1,836 @@
+pop	329
+dance pop	239
+pop rap	156
+post-teen pop	151
+rap	150
+rock	131
+latin	126
+hip hop	115
+trap latino	98
+trap	96
+latin pop	88
+tropical house	87
+pop dance	84
+edm	81
+electropop	81
+reggaeton	78
+modern rock	74
+pop rock	72
+r&b	62
+southern hip hop	62
+classic rock	60
+mellow gold	58
+soft rock	58
+tropical	56
+alt z	50
+album rock	48
+urban contemporary	48
+reggaeton flow	44
+regional mexican	43
+contemporary country	43
+country	41
+permanent wave	41
+electro house	39
+gangster rap	38
+alternative metal	38
+indie cafe pop	33
+mexican pop	33
+latin hip hop	33
+corrido	32
+ranchera	32
+melodic rap	31
+neo mellow	31
+country road	31
+atl hip hop	30
+nu metal	30
+hard rock	30
+underground hip hop	29
+uk pop	28
+german hip hop	27
+funk carioca	27
+indie pop	27
+indie poptimism	27
+k-pop	27
+alternative rock	27
+rock en espanol	26
+desi pop	25
+nuevo regional mexicano	25
+folk rock	25
+viral pop	23
+pop edm	23
+hip pop	23
+sertanejo pop	22
+pop urbaine	22
+latin arena pop	22
+new wave pop	22
+filmi	21
+french hip hop	21
+art rock	21
+adult standards	21
+modern bollywood	20
+europop	20
+house	19
+pop punk	19
+alternative r&b	19
+neo soul	19
+modern alternative rock	18
+sertanejo universitario	18
+country rock	18
+colombian pop	17
+soul	17
+italian hip hop	16
+sertanejo	16
+canadian pop	16
+slap house	16
+latin alternative	16
+j-pop	15
+reggaeton colombiano	15
+francoton	15
+spanish pop	15
+indietronica	15
+post-grunge	15
+east coast hip hop	15
+singer-songwriter	15
+conscious hip hop	15
+social media pop	14
+norteno	14
+uk dance	14
+escape room	14
+indie rock	14
+metropopolis	14
+sierreno	13
+viral rap	13
+italian pop	13
+emo rap	13
+hollywood	13
+new wave	13
+latin rock	13
+dirty south rap	13
+banda	13
+blues rock	13
+roots rock	13
+progressive house	12
+rap francais	12
+trap argentino	12
+k-pop boy group	12
+pop nacional	12
+pop r&b	12
+modern country rock	12
+metal	12
+sufi	12
+psychedelic rock	12
+folk	12
+show tunes	11
+uk hip hop	11
+miami hip hop	11
+bedroom pop	11
+chicago rap	11
+rap metal	11
+dance rock	11
+hardcore hip hop	11
+corridos tumbados	10
+sad rap	10
+progressive electro house	10
+vapor trap	10
+dark trap	10
+boy band	10
+heartland rock	10
+new romantic	10
+funk	10
+urbano espanol	9
+funk ostentacao	9
+funk paulista	9
+australian pop	9
+talent show	9
+mariachi	9
+swedish pop	9
+mexican hip hop	9
+art pop	9
+motown	9
+yacht rock	9
+classical	9
+pagode	8
+dutch hip hop	8
+chill r&b	8
+k-pop girl group	8
+trap queen	8
+cali rap	8
+big room	8
+stomp and holler	8
+german dance	8
+meme rap	8
+west coast rap	8
+alternative hip hop	8
+argentine rock	8
+disco	8
+indie soul	8
+hoerspiel	7
+trap italiana	7
+argentine hip hop	7
+country dawn	7
+rap conscient	7
+puerto rican pop	7
+folk-pop	7
+british soul	7
+glam rock	7
+piano rock	7
+quiet storm	7
+christian music	7
+ccm	7
+dutch rap pop	6
+canadian hip hop	6
+lo-fi cover	6
+pop venezolano	6
+trap triste	6
+canadian contemporary r&b	6
+girl group	6
+tennessee hip hop	6
+forro	6
+vocal jazz	6
+dmv rap	6
+grunge	6
+soundtrack	6
+synthpop	6
+beatlesque	6
+punk	6
+grupera	6
+worship	6
+metalcore	6
+australian dance	6
+r&b en espanol	5
+brooklyn drill	5
+otacore	5
+brazilian edm	5
+rap latina	5
+alternative dance	5
+dutch pop	5
+norwegian pop	5
+german pop	5
+sophisti-pop	5
+g funk	5
+outlaw country	5
+texas country	5
+progressive rock	5
+funk metal	5
+funk rock	5
+classical performance	5
+candy pop	5
+baroque pop	5
+indie folk	5
+rap rock	5
+afrofuturism	5
+emo	5
+world worship	5
+queens hip hop	5
+reggae fusion	5
+classic soul	5
+trap brasileiro	5
+country rap	4
+lgbtq+ hip hop	4
+pagode novo	4
+polish hip hop	4
+polish trap	4
+la indie	4
+german drill	4
+nyc rap	4
+modern indie pop	4
+italian adult pop	4
+funk pop	4
+florida rap	4
+toronto rap	4
+melbourne bounce international	4
+memphis hip hop	4
+dream pop	4
+scandipop	4
+indie r&b	4
+anime	4
+desi hip hop	4
+brazilian hip hop	4
+sleep	4
+mexican rock	4
+dancehall	4
+classic country pop	4
+irish rock	4
+eurodance	4
+mpb	4
+ska argentino	4
+british invasion	4
+spanish pop rock	4
+rap conciencia	4
+garage rock	4
+cantautor	4
+christian alternative rock	4
+gruperas inmortales	4
+swedish electropop	4
+brill building pop	4
+orchestra	4
+rap marseille	4
+bachata	4
+jazz blues	4
+pop argentino	4
+drill	4
+kindermusik	4
+uk contemporary r&b	4
+pop house	3
+afro dancehall	3
+nigerian pop	3
+albanian hip hop	3
+punjabi pop	3
+kentucky hip hop	3
+japanese singer-songwriter	3
+japanese teen pop	3
+funk consciente	3
+australian hip hop	3
+drill francais	3
+turkish trap	3
+pop reggaeton	3
+rap napoletano	3
+nz pop	3
+acoustic pop	3
+lilith	3
+trap boricua	3
+spanish hip hop	3
+lo-fi beats	3
+dutch house	3
+electronic trap	3
+deep german hip hop	3
+oklahoma country	3
+new rave	3
+detroit hip hop	3
+downtempo	3
+french pop	3
+deep house	3
+bubblegrunge	3
+pagode baiano	3
+broadway	3
+alabama rap	3
+kleine hoerspiel	3
+old school thrash	3
+melancholia	3
+german techno	3
+trance	3
+crunk	3
+bolero	3
+cancion melodica	3
+brazilian rock	3
+canadian singer-songwriter	3
+children's music	3
+modern blues rock	3
+punk blues	3
+classic canadian rock	3
+brostep	3
+compositional ambient	3
+pop soul	3
+rap belge	3
+hamburg hip hop	3
+wrestling	3
+filter house	3
+anime rock	3
+j-rock	3
+memphis soul	3
+atl trap	3
+melodic metalcore	3
+uk metalcore	3
+trap soul	3
+chicago drill	3
+symphonic rock	3
+rap dominicano	3
+canadian rock	3
+australian electropop	3
+salsa	3
+latin viral pop	3
+uk alternative pop	3
+nova mpb	3
+grime	3
+afropop	2
+future house	2
+trap carioca	2
+indie triste	2
+colombian hip hop	2
+flamenco urbano	2
+german alternative rap	2
+german trap	2
+new york drill	2
+forro de favela	2
+k-rap	2
+lo-fi indie	2
+belgian pop	2
+german cloud rap	2
+london rap	2
+pop lgbtq+ brasileira	2
+la pop	2
+women's music	2
+gujarati pop	2
+deep pop edm	2
+trap baiano	2
+russian hip hop	2
+russian trap	2
+pop rap brasileiro	2
+meditation	2
+nigerian hip hop	2
+melbourne bounce	2
+gauze pop	2
+shiver pop	2
+italian underground hip hop	2
+italian indie pop	2
+milan indie	2
+north carolina hip hop	2
+asian american hip hop	2
+anime score	2
+japanese soundtrack	2
+detroit trap	2
+piseiro	2
+baton rouge rap	2
+seattle hip hop	2
+korean r&b	2
+rave funk	2
+minnesota hip hop	2
+lo-fi chill	2
+thrash metal	2
+birmingham metal	2
+stoner rock	2
+nu-cumbia	2
+rock nacional brasileiro	2
+nashville sound	2
+classic bollywood	2
+vocal house	2
+new jack swing	2
+acid rock	2
+jazz pop	2
+chamber pop	2
+latin talent show	2
+political hip hop	2
+virginia hip hop	2
+detroit rock	2
+groove metal	2
+indie pop rap	2
+oakland hip hop	2
+canadian metal	2
+australian rock	2
+socal pop punk	2
+modern power pop	2
+complextro	2
+electro	2
+early romantic era	2
+new jersey rap	2
+ambient worship	2
+screamo	2
+swedish synthpop	2
+turkish hip hop	2
+canadian electronic	2
+british orchestra	2
+belgian edm	2
+pittsburgh rap	2
+belgian hip hop	2
+baroque	2
+early music	2
+country pop	2
+environmental	2
+neo-classical	2
+ohio hip hop	2
+redneck	2
+southern rock	2
+classical era	2
+southern soul	2
+electro latino	2
+rock-and-roll	2
+deep euro house	2
+new french touch	2
+vapor soul	2
+basshall	2
+spanish rock	2
+psychedelic hip hop	2
+etherpop	2
+ninja	2
+neo-psychedelic	2
+britpop	2
+madchester	2
+italo dance	2
+uk funky	2
+swedish hip hop	2
+german soundtrack	2
+industrial	2
+industrial metal	2
+industrial rock	2
+neo-synthpop	2
+tejano	2
+desi trap	2
+swing	2
+deep regional mexican	2
+chillwave	2
+venezuelan hip hop	2
+gaming edm	2
+nordic house	2
+canadian pop punk	2
+canadian punk	2
+rumba	2
+double drumming	2
+soul blues	2
+torch song	2
+pixie	2
+bow pop	2
+irish pop	2
+dembow	2
+video game music	2
+lounge	2
+trap mexicano	2
+danish pop	2
+lullaby	2
+opm	2
+hyperpop	2
+hindi hip hop	2
+lithuanian electronic	2
+german metal	2
+champeta	2
+j-poprock	2
+japanese emo	2
+visual kei	2
+trap chileno	2
+philly rap	2
+queer country	1
+south african house	1
+ghanaian hip hop	1
+swedish dancehall	1
+trap metal italiana	1
+drill espanol	1
+bass house	1
+frauenrap	1
+rap baixada fluminense	1
+trap funk	1
+chihuahua indie	1
+mexican indie	1
+polish electronica	1
+dominican pop	1
+indonesian pop	1
+argentine indie	1
+preschool children's music	1
+tekk	1
+melodic dubstep	1
+r&b italiano	1
+nerdcore brasileiro	1
+chinese idol pop	1
+variete francaise	1
+indie rock italiano	1
+aussie drill	1
+perreo	1
+rap algerien	1
+rap tunisien	1
+movie tunes	1
+asmr	1
+azonto	1
+dubstep	1
+bergamo indie	1
+indian edm	1
+r&b argentino	1
+indiecoustica	1
+cubaton	1
+south african rock	1
+nyc pop	1
+oakland indie	1
+glitchcore	1
+scam rap	1
+edmonton indie	1
+anime latino	1
+hong kong hip hop	1
+kazakh pop	1
+pet calming	1
+austindie	1
+indie game soundtrack	1
+transpop	1
+chicago indie	1
+background music	1
+uk doom metal	1
+rock urbano mexicano	1
+oxford indie	1
+german trance	1
+arkansas country	1
+hard rock brasileiro	1
+rock alternativo brasileiro	1
+progressive metal	1
+classic j-pop	1
+classical tenor	1
+italian tenor	1
+operatic pop	1
+hamburg electronic	1
+happy hardcore	1
+chamber orchestra	1
+string orchestra	1
+japanese classical	1
+rock brasiliense	1
+post-punk argentina	1
+contemporary vocal jazz	1
+turkish pop	1
+reggae	1
+roots reggae	1
+freak folk	1
+british folk	1
+supergroup	1
+latin afrobeat	1
+puerto rican rock	1
+anti-folk	1
+christlicher rap	1
+skate punk	1
+christian rock	1
+eau claire indie	1
+post-minimalism	1
+electric blues	1
+polish classical	1
+jazz funk	1
+dreamo	1
+deep tech house	1
+swedish indie pop	1
+northern irish indie	1
+uk reggae	1
+boston rock	1
+sacramento indie	1
+rock keyboard	1
+melodic thrash	1
+speed metal	1
+sheffield indie	1
+cartoon	1
+minneapolis sound	1
+synth funk	1
+salsa choke	1
+veracruz indie	1
+shimmer pop	1
+new orleans rap	1
+south carolina hip hop	1
+kentucky indie	1
+kentucky roots	1
+italian baroque	1
+bronx hip hop	1
+chicago hardcore	1
+chicago punk	1
+hardcore punk	1
+minecraft	1
+a cappella	1
+mexican classic rock	1
+classic pakistani pop	1
+nashville hip hop	1
+german orchestra	1
+scottish new wave	1
+disco house	1
+turkish edm	1
+korean instrumental	1
+new age piano	1
+panamanian pop	1
+merseybeat	1
+modern folk rock	1
+uk americana	1
+nwobhm	1
+kansas city hip hop	1
+german romanticism	1
+reading	1
+rap df	1
+celtic	1
+middle earth	1
+hyphy	1
+old school hip hop	1
+nu-metalcore	1
+nu disco	1
+uk dancehall	1
+brighton indie	1
+impressionism	1
+post-romantic era	1
+mathcore	1
+progressive metalcore	1
+nottingham indie	1
+post-screamo	1
+argentine telepop	1
+folklore argentino	1
+noise pop	1
+indie liguria	1
+axe	1
+cuarteto	1
+electropowerpop	1
+dutch edm	1
+bmore	1
+moombahton	1
+glam metal	1
+brazilian bass	1
+g-house	1
+hawaiian hip hop	1
+russian ccm	1
+boston hip hop	1
+tamil hip hop	1
+mississippi hip hop	1
+liquid funk	1
+danish electronic	1
+ambient pop	1
+el paso indie	1
+shoegaze	1
+glee club	1
+icelandic indie	1
+icelandic rock	1
+canadian country	1
+c-pop	1
+mandopop	1
+taiwan pop	1
+zhongguo feng	1
+haryanvi pop	1
+dixieland	1
+harlem renaissance	1
+jazz trumpet	1
+new orleans jazz	1
+argentine reggae	1
+danish metal	1
+danish rock	1
+british singer-songwriter	1
+latin christian	1
+rock cristiano	1
+power pop	1
+indonesian hip hop	1
+chutney	1
+flamenco	1
+world	1
+cosmic american	1
+jam band	1
+swedish idol pop	1
+brazilian reggae	1
+reggae tuga	1
+ambient folk	1
+protopunk	1
+jazz rap	1
+welsh metal	1
+late romantic era	1
+russian romanticism	1
+neon pop punk	1
+psychedelic soul	1
+viral trap	1
+salsa puertorriquena	1
+dance-punk	1
+bubblegum pop	1
+pop flamenco	1
+experimental hip hop	1
+french soundtrack	1
+nashville singer-songwriter	1
+afroswing	1
+rome indie	1
+australian reggae fusion	1
+bergen indie	1
+batidao romantico	1
+soul jazz	1
+deep underground hip hop	1
+australian psych	1
+irish singer-songwriter	1
+modern salsa	1
+swamp rock	1
+british indie rock	1
+speedrun	1
+german baroque	1
+rock drums	1
+canadian latin	1
+celtic rock	1
+northern soul	1
+teen pop	1
+ottawa rap	1
+rap kreyol	1
+afrofuturismo brasileiro	1
+rap mineiro	1
+rap sardegna	1
+ska mexicano	1
+ska punk	1
+australian alternative pop	1
+morelos indie	1
+funk das antigas	1
+french shoegaze	1
+french synthpop	1
+canadian electropop	1
+grave wave	1
+indie anthem-folk	1
+electronica	1
+rap boricua	1
+art punk	1
+post-punk	1
+zolo	1
+nueva cancion	1
+trova	1
+bc underground hip hop	1
+pop virale italiano	1
+austrian orchestra	1
+monterrey indie	1
+baltimore indie	1
+modern dream pop	1
+bossa nova	1
+samba de roda	1
+tropicalia	1
+australian children's music	1
+musica de fondo	1
+dfw rap	1
+vancouver indie	1
+j-pixie	1
+israeli pop	1
+fidget house	1
+swedish drill	1
+swedish gangsta rap	1
+swedish trap	1
+swedish trap pop	1
+st louis rap	1
+bachata dominicana	1
+dutch trance	1
+r&b brasileiro	1
+rap cearense	1
+power metal	1
+swedish metal	1
+swedish power metal	1
+sunshine pop	1
+folk brasileiro	1
+portuguese pop	1
+rhode island rap	1
+bedroom soul	1
+neo-singer-songwriter	1
+german hard rock	1
+german rock	1
+vallenato	1
+rap baiano	1
+phonk	1
+indonesian r&b	1
+palm desert scene	1
+stoner metal	1
+trap venezolano	1
+reggae rock	1
+scorecore	1
+rap catala	1
+trap catala	1
+j-acoustic	1
+indian instrumental	1
+rockabilly	1
+pop emo	1
+neue deutsche harte	1
+old school rap francais	1
+norwegian indie	1
+easy listening	1
+brooklyn indie	1
+alternative pop rock	1
+australian country	1
+athens indie	1
+jovem guarda	1
+japanese soul	1
+classical cello	1
+destroy techno	1
+rap espanol	1
+rap underground espanol	1
+chicano rap	1
+south african pop	1
+turkish alt pop	1
+nursery	1
+boogaloo	1
+australian indie	1
+deep groove house	1
+future garage	1
+rkt	1
+reggaeton chileno	1
+stomp pop	1
+liverpool indie	1
+birmingham grime	1
+instrumental grime	1
+ukg revival	1
+lithuanian edm	1
+barbadian pop	1
+deep talent show	1
+modern hard rock	1
+manchester hip hop	1
+nu gaze	1
+portland hip hop	1
+houston rap	1
+deep ccm	1
