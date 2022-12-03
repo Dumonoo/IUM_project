@@ -40,7 +40,7 @@ for file in data_jsonl:
         missing_artists_for_track = data_frame.loc[data_frame["id_artist"].isnull()]
         missing_artists_for_track.to_json(raports_dir+'missing_artists_for_track.jsonl', orient='records', lines=True)
         missing_title_for_track = data_frame.loc[data_frame["name"].isnull()]
-        missing_title_for_track.to_json(raports_dir+'missing_artists_for_track.jsonl', orient='records', lines=True)
+        missing_title_for_track.to_json(raports_dir+'missing_title_for_track.jsonl', orient='records', lines=True)
     elif file == "sessions.jsonl":
         sessions_without_user = data_frame.loc[data_frame["user_id"].isnull()]
         sessions_without_user.to_json(raports_dir+'sessions_without_user.jsonl', orient='records', lines=True)
