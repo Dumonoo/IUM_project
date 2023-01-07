@@ -1,3 +1,7 @@
 pandas
 IPython
 scikit-learn
+
+# extra
+plotly.express 
+seaborn
