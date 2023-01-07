@@ -34,19 +34,14 @@ class Session:
     # User lisened to this song
     def add_song(self, id):
         self.session_songs_listened_ids.append(id)
-        # if self.id == 186:
-        #     print("id", id, self.session_songs_listened_ids)
 
     # User didnt like this song much
     def add_skipped_song(self, id):
         self.session_songs_skiped_ids.append(id)
-        # if self.id == 186:
-        #     print("id", id, self.session_songs_skiped_ids)
+
     # User liked this song
     def add_liked_song(self, id):
         self.session_song_liked_ids.append(id)
-        # if self.id == 186:
-        #     print("id", id, self.session_song_liked_ids)
 
     # Update session timestamps and session length
     def update_timestamps(self, start_time, end_time):
@@ -59,8 +54,25 @@ class Session:
         self.session_data.append(row)
 
     # Return list of tracks id which were litended during session
-    def get_song_listened_set(self):
+    def get_songs_listened_set(self):
         return list(set(self.session_songs_listened_ids))
+
+    # Return list of tracks id which were skipped during session
+    def get_songs_skipped_set(self):
+        return list(set(self.session_songs_skiped_ids))
+
+    # Return list of tracks id which were liked during session
+    def get_songs_liked_set(self):
+        return list(set(self.session_song_liked_ids))
+
+    # Return list of tracks id listend during session exclude skipped
+    def get_song_listened_without_skiping(self):
+        filtered_tracks = []
+        skipped_tracks = self.get_songs_skipped_set()
+        for track in self.get_songs_listened_set():
+            if track not in skipped_tracks:
+                filtered_tracks.append(track)
+        return filtered_tracks
 
 
 
@@ -79,7 +91,7 @@ class UserSessions:
         if self.sorted:
             return
         self.session_list = sorted(self.session_list, key=lambda session: session.session_end_timestamp, reverse=True)
-        self.all_session_list - self.session_list
+        self.all_session_list = self.session_list
         self.sorted = True
 
     # Add session to the session list
@@ -99,8 +111,30 @@ class UserSessions:
     
     # Get list of all tracks listened in previous x days
     def get_list_of_tracks_listened_in_previous_x_days(self, x_days = 30):
-        
-        pass
+        last_day = self.get_latest_session().session_start_timestamp
+        crit_day = last_day - pd.Timedelta(days=x_days)
+        print(last_day)
+        x_days_history = []
+        for session in self.session_list:
+            if session.session_end_timestamp < crit_day:
+                print(session.session_end_timestamp, crit_day)
+                break
+            x_days_history.extend(session.get_songs_listened_set())
+        return list(set(x_days_history))
+
+    # Get list of all tracks skiped in previous x days
+    def get_list_of_tracks_skiped_in_previous_x_days(self, x_days = 30):
+        last_day = self.get_latest_session().session_start_timestamp
+        crit_day = last_day - pd.Timedelta(days=x_days)
+        print(last_day)
+        x_days_history = []
+        for session in self.session_list:
+            if session.session_end_timestamp < crit_day:
+                print(session.session_end_timestamp, crit_day)
+                break
+            x_days_history.extend(session.get_songs_skipped_set())
+        return list(set(x_days_history))
+
 
 
 def analyse_user(user_id):
@@ -133,8 +167,7 @@ def analyse_user(user_id):
         # End Time
         if current_session_end is None or current_session_end <= row['timestamp']:
             current_session_end = row['timestamp']
-        # if row['session_id'] == 186:
-        #     print(row)
+
         # Songs played
         if row['event_type'] == "play":
             session_obj.add_song(row['track_id'])
@@ -145,66 +178,6 @@ def analyse_user(user_id):
 
     return user_session_obj
 
-def get_user_sessions_list2(user_id):
-    sessions_info = get_user_sessions_info(user_id=user_id)
-    sessions_dict = {}
-    print(sessions_info)
-    # for session_log in sessions_info:
-    #     print(session_log)
-
-    # session information clamp
-    current_session_id = None
-    current_session_start = None
-    current_session_end = None
-    current_session_logs = []
-    for index, row in sessions_info.iterrows():
-        # First session
-        if current_session_id is None:
-            current_session_id = row['session_id']
-
-        # Got all current session info -> add to session dict
-        if current_session_id != row['session_id'] and current_session_id not in sessions_dict and current_session_id is not None:
-            sessions_dict[current_session_id] = {"session_id": current_session_id, "session_start": current_session_start, 
-                                                 "session_end": current_session_end, "session_length": 0, "session_logs": current_session_logs}
-            current_session_id = row['session_id']
-            current_session_start = None
-            current_session_end = None
-            current_session_logs = []
-
-        # Start Time
-        if current_session_start is None or current_session_start > row['timestamp']:
-            current_session_start = row['timestamp']
-        # End Time
-        if current_session_end is None or current_session_end <= row['timestamp']:
-            current_session_end = row['timestamp']
-
-        # Add log to session group
-        current_session_logs.append(row)
-
-        # if current_session_id != row['session_id']:
-
-    return sessions_dict
-
-
-    #     print(index, row['user_id'])
-    # print(dict(sessions_info))
-    # return sessions_info.groupby(by=['session_id'], group_keys=True).apply(lambda x: x)
-    # for session_id in sessions_info.groupby(by=['session_id'], group_keys=True).apply(lambda x: x):
-    #     print(session_id)
-
-def print_group_info(group):
-    print(f'Session ID: {group.name}')
-    print(group)
-sessions_list = get_user_sessions_list(101)
-
-# print(get_user_sessions_list(user_id=101).loc[124])
-# print(get_user_sessions_list(user_id=101).index.values)
-
-# sessions_list.apply(print_group_info)
-# for session_id, group in sessions_list.index:
-#     print(f'Session ID: {session_id}')
-#     print(group)
-# print(get_user_sessions_list2(101).keys())
-# print("hello world")
 print("Hello world")
-print(analyse_user(101).get_latest_session().get_song_listened_set())
+# print(analyse_user(101).get_latest_session().get_songs_listened_set())
+print(analyse_user(101).get_list_of_tracks_skiped_in_previous_x_days())
