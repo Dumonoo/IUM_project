@@ -43,11 +43,7 @@ song_cluster_pipeline = Pipeline([('scaler', StandardScaler()),
                                    verbose=2))],verbose=True)
 to_normalize = tracks.select_dtypes(np.number)
 X = tracks.select_dtypes(np.number)
-number_cols = list(X.columns)
-# number_cols = list(to_normalize.columns)
-print(to_normalize.values)
-# song_cluster_pipeline.fit(to_normalize.values)fit_transform
-# song_cluster_pipeline.fit(X)
+song_cluster_pipeline.fit(X)
 
 def get_track_data(track_id, track_data):
     return track_data.loc[track_data['id'] == track_id]
@@ -77,17 +73,18 @@ def flatten_dict_list(dict_list):
 def recomend_n_songs(track_list, track_data, n_songs=10):
     metadata_columns = ['id', 'name', 'year']
 
-    # track_dict = flatten_dict_list(track_list)
     tracks_center = get_mean_vector(track_list, track_data)
     
-    # scaler = song_cluster_pipeline.steps[0][1]
-    # scaled_data = scaler.transform(track_data[number_cols])
+    scaler = song_cluster_pipeline.steps[0][1]
+    scaled_data = scaler.transform(track_data[used_columns])
     print(len(tracks_center.reshape(1, -1)))
-    # scaled_track_center = scaler.transform(tracks_center.reshape(1, -1))
-    # distances = cdist(scaled_track_center, scaled_data, 'cosine')
-    # index = list(np.argsort(distances)[:, :n_songs][0])
-    # rec_songs = track_data.iloc[index]
-
+    scaled_track_center = scaler.transform(tracks_center)
+    scaled_track_center = scaler.transform(tracks_center.reshape(1, -1))
+    distances = cdist(scaled_track_center, scaled_data, 'cosine')
+    index = list(np.argsort(distances)[:, :n_songs][0])
+    rec_songs = track_data.iloc[index]
+    # rec_songs = rec_songs[~rec_songs['name'].isin(track_dict['name'])]
+    return rec_songs[metadata_columns].to_dict(orient='records')
     print("DONE")
     pass     
 print(tracks.columns)
