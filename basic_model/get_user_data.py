@@ -113,26 +113,44 @@ class UserSessions:
     def get_list_of_tracks_listened_in_previous_x_days(self, x_days = 30):
         last_day = self.get_latest_session().session_start_timestamp
         crit_day = last_day - pd.Timedelta(days=x_days)
-        print(last_day)
         x_days_history = []
         for session in self.session_list:
             if session.session_end_timestamp < crit_day:
-                print(session.session_end_timestamp, crit_day)
                 break
             x_days_history.extend(session.get_songs_listened_set())
+        return list(set(x_days_history))
+
+    # Get list of all tracks listened in previous x days without skipped
+    def get_list_of_tracks_listened_in_previous_x_days_without_skipping(self, x_days = 30):
+        last_day = self.get_latest_session().session_start_timestamp
+        crit_day = last_day - pd.Timedelta(days=x_days)
+        x_days_history = []
+        for session in self.session_list:
+            if session.session_end_timestamp < crit_day:
+                break
+            x_days_history.extend(session.get_song_listened_without_skiping())
         return list(set(x_days_history))
 
     # Get list of all tracks skiped in previous x days
     def get_list_of_tracks_skiped_in_previous_x_days(self, x_days = 30):
         last_day = self.get_latest_session().session_start_timestamp
         crit_day = last_day - pd.Timedelta(days=x_days)
-        print(last_day)
         x_days_history = []
         for session in self.session_list:
             if session.session_end_timestamp < crit_day:
-                print(session.session_end_timestamp, crit_day)
                 break
             x_days_history.extend(session.get_songs_skipped_set())
+        return list(set(x_days_history))
+
+    # Get list of all tracks liked in previous x days
+    def get_list_of_tracks_liked_in_previous_x_days(self, x_days = 30):
+        last_day = self.get_latest_session().session_start_timestamp
+        crit_day = last_day - pd.Timedelta(days=x_days)
+        x_days_history = []
+        for session in self.session_list:
+            if session.session_end_timestamp < crit_day:
+                break
+            x_days_history.extend(session.get_songs_liked_set())
         return list(set(x_days_history))
 
 
@@ -180,4 +198,5 @@ def analyse_user(user_id):
 
 print("Hello world")
 # print(analyse_user(101).get_latest_session().get_songs_listened_set())
-print(analyse_user(101).get_list_of_tracks_skiped_in_previous_x_days())
+# print(analyse_user(101).get_list_of_tracks_skiped_in_previous_x_days())
+print(analyse_user(101).get_list_of_tracks_liked_in_previous_x_days())
