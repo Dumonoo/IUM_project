@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 
+from typing import List
 import pandas as pd
 
 users = pd.read_json("data/users.jsonl", lines=True)
@@ -9,15 +10,17 @@ sessions = pd.read_json("data/sessions.jsonl", lines=True)
 # Returns all user sessions cleaned from advertisments
 def get_user_sessions_info(user_id):
     sessions_info = sessions.loc[sessions["user_id"] == user_id]
-    sessions_info = sessions_info.loc[sessions_info['event_type'] != "advertisment"]
+    sessions_info = sessions_info.loc[sessions_info["event_type"] != "advertisment"]
     return sessions_info
+
 
 def get_user_sessions_list(user_id):
     sessions_info = get_user_sessions_info(user_id=user_id)
-    return sessions_info.groupby(by=['session_id'], group_keys=True).apply(lambda x: x)
+    return sessions_info.groupby(by=["session_id"], group_keys=True).apply(lambda x: x)
+
 
 # Procedure Analyse sessions for user -> limit session data -> use prediction to guess user playlist -> check if its in future user session
-# Normaly -> get lates users sessions analyse best more liked tracks -> send it to model to calculate best tracks for listen 
+# Normaly -> get lates users sessions analyse best more liked tracks -> send it to model to calculate best tracks for listen
 # -> exclude any skiped tracks from list, exclude any track which was listend in previous month
 # Return to user list of 10 best tracks for him dont forget to add one / two random track from time to time to exploration
 class Session:
@@ -74,23 +77,35 @@ class Session:
                 filtered_tracks.append(track)
         return filtered_tracks
 
-
-
     pass
+
+
 class UserSessions:
     def __init__(self, user_id) -> None:
         self.user_id = user_id
-        self.session_list = []
+        self.session_list: List[Session] = []
         self.furute_session_list = []
         # All sessions before clamping
-        self.all_session_list = []
+        self.all_session_list: List[Session] = []
         self.sorted = False
-    
+
+    def get_songs_listened_since(self, timestamp: pd.Timestamp):
+        return [
+            song
+            for session in self.session_list
+            if timestamp < session.session_start_timestamp
+            for song in session.get_song_listened_without_skiping()
+        ]
+
     # Sort session by date ascending
     def sort_sessions_by_date(self):
         if self.sorted:
             return
-        self.session_list = sorted(self.session_list, key=lambda session: session.session_end_timestamp, reverse=True)
+        self.session_list = sorted(
+            self.session_list,
+            key=lambda session: session.session_end_timestamp,
+            reverse=True,
+        )
         self.all_session_list = self.session_list
         self.sorted = True
 
@@ -108,9 +123,9 @@ class UserSessions:
         # set session_list to all before timestamp
         # set furute_session_list to all after timestamp
         pass
-    
+
     # Get list of all tracks listened in previous x days
-    def get_list_of_tracks_listened_in_previous_x_days(self, x_days = 30):
+    def get_list_of_tracks_listened_in_previous_x_days(self, x_days=30):
         last_day = self.get_latest_session().session_start_timestamp
         crit_day = last_day - pd.Timedelta(days=x_days)
         x_days_history = []
@@ -121,7 +136,9 @@ class UserSessions:
         return list(set(x_days_history))
 
     # Get list of all tracks listened in previous x days without skipped
-    def get_list_of_tracks_listened_in_previous_x_days_without_skipping(self, x_days = 30):
+    def get_list_of_tracks_listened_in_previous_x_days_without_skipping(
+        self, x_days=30
+    ):
         last_day = self.get_latest_session().session_start_timestamp
         crit_day = last_day - pd.Timedelta(days=x_days)
         x_days_history = []
@@ -132,7 +149,7 @@ class UserSessions:
         return list(set(x_days_history))
 
     # Get list of all tracks skiped in previous x days
-    def get_list_of_tracks_skiped_in_previous_x_days(self, x_days = 30):
+    def get_list_of_tracks_skiped_in_previous_x_days(self, x_days=30):
         last_day = self.get_latest_session().session_start_timestamp
         crit_day = last_day - pd.Timedelta(days=x_days)
         x_days_history = []
@@ -143,7 +160,7 @@ class UserSessions:
         return list(set(x_days_history))
 
     # Get list of all tracks liked in previous x days
-    def get_list_of_tracks_liked_in_previous_x_days(self, x_days = 30):
+    def get_list_of_tracks_liked_in_previous_x_days(self, x_days=30):
         last_day = self.get_latest_session().session_start_timestamp
         crit_day = last_day - pd.Timedelta(days=x_days)
         x_days_history = []
@@ -152,7 +169,6 @@ class UserSessions:
                 break
             x_days_history.extend(session.get_songs_liked_set())
         return list(set(x_days_history))
-
 
 
 def analyse_user(user_id):
@@ -167,36 +183,38 @@ def analyse_user(user_id):
     for index, row in sessions.iterrows():
         # First analyze session
         if current_session_id is None:
-            current_session_id = row['session_id']
+            current_session_id = row["session_id"]
             session_obj = Session(current_session_id)
 
         # Next session
-        if current_session_id != row['session_id']:
+        if current_session_id != row["session_id"]:
             session_obj.update_timestamps(current_session_start, current_session_end)
             user_session_obj.add_session(session_obj)
-            current_session_id = row['session_id']
+            current_session_id = row["session_id"]
             current_session_start = None
             current_session_end = None
             session_obj = Session(current_session_id)
-        
+
         # Start Time
-        if current_session_start is None or current_session_start > row['timestamp']:
-            current_session_start = row['timestamp']
+        if current_session_start is None or current_session_start > row["timestamp"]:
+            current_session_start = row["timestamp"]
         # End Time
-        if current_session_end is None or current_session_end <= row['timestamp']:
-            current_session_end = row['timestamp']
+        if current_session_end is None or current_session_end <= row["timestamp"]:
+            current_session_end = row["timestamp"]
 
         # Songs played
-        if row['event_type'] == "play":
-            session_obj.add_song(row['track_id'])
-        if row['event_type'] == "like":
-            session_obj.add_liked_song(row['track_id'])
-        if row['event_type'] == "skip":
-            session_obj.add_skipped_song(row['track_id'])
+        if row["event_type"] == "play":
+            session_obj.add_song(row["track_id"])
+        if row["event_type"] == "like":
+            session_obj.add_liked_song(row["track_id"])
+        if row["event_type"] == "skip":
+            session_obj.add_skipped_song(row["track_id"])
 
     return user_session_obj
 
-print("Hello world")
-# print(analyse_user(101).get_latest_session().get_songs_listened_set())
-# print(analyse_user(101).get_list_of_tracks_skiped_in_previous_x_days())
-print(analyse_user(101).get_list_of_tracks_liked_in_previous_x_days())
+
+if __name__ == "__main__":
+    print("Hello world")
+    # print(analyse_user(101).get_latest_session().get_songs_listened_set())
+    # print(analyse_user(101).get_list_of_tracks_skiped_in_previous_x_days())
+    print(analyse_user(101).get_list_of_tracks_liked_in_previous_x_days())

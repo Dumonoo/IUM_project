@@ -1,20 +1,96 @@
-#!/usr/bin/env python3
-# K-Mean content-base filtering algorithm
-
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
-import seaborn as sns
-import os
 from datetime import datetime
-from collections import defaultdict
 
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 
-import plotly.express as px 
+from get_user_data import analyse_user
+
+used_columns = [
+    "popularity",
+    "duration_ms",
+    "explicit",
+    "danceability",
+    "energy",
+    "key",
+    "loudness",
+    "speechiness",
+    "acousticness",
+    "instrumentalness",
+    "liveness",
+    "valence",
+    "tempo",
+    "year",
+]
+
+
+class Model:
+    def __init__(self, tracks: pd.DataFrame) -> None:
+        self.tracks = tracks
+
+    def train(self):
+        self._fit_cluster(self.tracks)
+
+    def validate(self):
+        self.validate_for_user(101)
+
+    def validate_for_user(self, user_id):
+        userSessions = analyse_user(user_id)
+        userSessions.sort_sessions_by_date()
+        userSessions.all_session_list.reverse()
+        for session in userSessions.all_session_list[:-1]:
+            liked = session.get_songs_liked_set()
+            later_songs = userSessions.get_songs_listened_since(
+                session.session_end_timestamp
+            )
+            if not len(liked):
+                continue
+            self._fit_cluster(self.tracks)
+            recommended = model.recommend(liked)
+            print(*recommended, sep="\n")
+            rate = len([song for song in recommended if song["id"] in later_songs])
+            print("Rate:", rate)
+
+    def _fit_cluster(self, tracks: pd.DataFrame):
+        self.pipeline = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                ("kmeans", KMeans(n_clusters=14, verbose=0, n_init="auto")),
+            ],
+        )
+        X = tracks.select_dtypes(np.number)
+        X.fillna(0, inplace=True)
+        self.pipeline.fit(X.values)
+
+    def recommend(self, liked, n=10):
+        metadata_columns = ["id", "name", "year"]
+        mean_vector = self._get_mean_vector(liked)
+        scaler = self.pipeline.steps[0][1]
+        scaled_data = scaler.transform(self.tracks[used_columns].values)
+        scaled_track_center = scaler.transform(mean_vector)
+        scaled_track_center = scaler.transform(mean_vector.reshape(1, -1))
+        distances = cdist(scaled_track_center, scaled_data, "cosine")
+        index = list(np.argsort(distances)[:, :n][0])
+        rec_songs = self.tracks.iloc[index]
+        return rec_songs[metadata_columns].to_dict(orient="records")
+
+    def _get_mean_vector(self, liked_ids):
+        tracks_vectors = []
+        for id in liked_ids:
+            track_data = self._find_track_by_id(id)
+            # Check if track exists in track_data
+            track_vector = track_data[used_columns].values
+            tracks_vectors.append(track_vector)
+
+        tracks_matrix = np.array(list(tracks_vectors))
+        return np.mean(tracks_matrix, axis=0)
+
+    def _find_track_by_id(self, id):
+        return self.tracks.loc[self.tracks["id"] == id]
+
 
 def get_year(str_date):
     data_obj = None
@@ -26,90 +102,10 @@ def get_year(str_date):
         data_obj = datetime.strptime(str_date, "%Y-%m-%d")
     return data_obj.year
 
-tracks = pd.read_json("data/tracks.jsonl", lines=True)
-# Add additional columns
-tracks['year'] = tracks.apply(lambda x: get_year(x["release_date"]), axis=1)
-additional_columns = ['year']
-sound_features = ['acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'valence']
 
-used_columns = ['popularity', 'duration_ms', 'explicit', 'danceability', 
-                'energy', 'key', 'loudness', 'speechiness', 'acousticness',
-                'instrumentalness', 'liveness', 'valence', 'tempo', 'year']
+if __name__ == "__main__":
 
-example = ['0uybt73QFXaLCoxuVf6fhm', '6SQfZKwce4nGuMwrcVwK8C', '6VFimaHK7Mv5GO5NrqGYu1', '4yORNsoYe4XnK99EXhKhWB', '2D1hlMwWWXpkc3CZJ5U351', '466cKvZn1j45IpxDdYZqdA']
-
-song_cluster_pipeline = Pipeline([('scaler', StandardScaler()), 
-                                  ('kmeans', KMeans(n_clusters=14, 
-                                   verbose=2))],verbose=True)
-to_normalize = tracks.select_dtypes(np.number)
-X = tracks.select_dtypes(np.number)
-song_cluster_pipeline.fit(X)
-
-def get_track_data(track_id, track_data):
-    return track_data.loc[track_data['id'] == track_id]
-
-def get_mean_vector(track_list_ids, tracks_data):
-    tracks_vectors = []
-    for track_id in track_list_ids:
-        track_data = get_track_data(track_id, tracks_data)
-        # Check if track exists in track_data
-        track_vector = tracks_data[used_columns].values
-        tracks_vectors.append(track_vector)
-    
-    tracks_matrix = np.array(list(tracks_vectors))
-    return np.mean(tracks_matrix, axis=0)
-
-def flatten_dict_list(dict_list):     
-    flattened_dict = defaultdict()
-    for key in dict_list[0].keys():
-        flattened_dict[key] = []
-    
-    for dictionary in dict_list:
-        for key, value in dictionary.items():
-            flattened_dict[key].append(value)
-            
-    return flattened_dict
-
-def recomend_n_songs(track_list, track_data, n_songs=10):
-    metadata_columns = ['id', 'name', 'year']
-
-    tracks_center = get_mean_vector(track_list, track_data)
-    
-    scaler = song_cluster_pipeline.steps[0][1]
-    scaled_data = scaler.transform(track_data[used_columns])
-    print(len(tracks_center.reshape(1, -1)))
-    scaled_track_center = scaler.transform(tracks_center)
-    scaled_track_center = scaler.transform(tracks_center.reshape(1, -1))
-    distances = cdist(scaled_track_center, scaled_data, 'cosine')
-    index = list(np.argsort(distances)[:, :n_songs][0])
-    rec_songs = track_data.iloc[index]
-    # rec_songs = rec_songs[~rec_songs['name'].isin(track_dict['name'])]
-    return rec_songs[metadata_columns].to_dict(orient='records')
-    print("DONE")
-    pass     
-print(tracks.columns)
-
-# print(data_by_year['year'])
-
-print("hello world!")
-# print(get_track_data("0uybt73QFXaLCoxuVf6fhm", tracks))
-print(recomend_n_songs(example, tracks))
-
-
-
-
-# fig = px.line(data_by_year, x='year', y=sound_features)
-# fig.show()
-# print(tracks.loc[tracks["explicit"] == 1])
-# data_by_year = tracks.groupby('year').mean()
-# data_by_year = data_by_year.unstack(level=0)
-# mean_values = tracks[sound_features.extend(additional_columns)].groupby('year').mean()
-# mean_data = pd.DataFrame(mean_values)
-# print(mean_data)
-# fig = px.line(mean_data, x='year', y=sound_features)
-# mean_data = pd.DataFrame(mean_values, columns=['mean'])
-# mean_data['year'] = tracks['year'].unique()
-# fig = px.line(mean_data, x='year', y='mean')
-# fig = px.line(tracks, x='year', y=sound_features)
-# fig.show()
-# print(tracks['release_date'])
+    tracks = pd.read_json("data/tracks.jsonl", lines=True)
+    tracks["year"] = tracks.apply(lambda x: get_year(x["release_date"]), axis=1)
+    model = Model(tracks)
+    model.validate()
