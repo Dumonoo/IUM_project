@@ -1,2 +1,4 @@
 *.jsonl
 *.csv
+venv/
+kpa/
