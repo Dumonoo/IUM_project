@@ -1,8 +1,5 @@
 *.jsonl
 *.csv
-<<<<<<< HEAD
 personal/
-=======
 venv/
 kpa/
->>>>>>> d20111781ccc67305ee6ca9883408d9b0bbeb532
