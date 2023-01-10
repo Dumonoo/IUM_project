@@ -6,11 +6,13 @@ import pandas as pd
 
 users = pd.read_json("data/users.jsonl", lines=True)
 sessions = pd.read_json("data/sessions.jsonl", lines=True)
+tracks = pd.read_json("data/tracks.jsonl", lines=True)
 
 # Returns all user sessions cleaned from advertisments
 def get_user_sessions_info(user_id):
     sessions_info = sessions.loc[sessions["user_id"] == user_id]
     sessions_info = sessions_info.loc[sessions_info["event_type"] != "advertisment"]
+    sessions_info = sessions_info.dropna(subset=["track_id"])
     return sessions_info
 
 
@@ -89,13 +91,24 @@ class UserSessions:
         self.all_session_list: List[Session] = []
         self.sorted = False
 
-    def get_songs_listened_since(self, timestamp: pd.Timestamp):
-        return [
+    def get_n_first_liked(self, n):
+        self.sort_sessions_by_date()
+        self.session_list.reverse()
+        liked = []
+        for session in self.session_list:
+            liked.extend(session.get_songs_liked_set())
+            if len(liked) > n:
+                return liked, session.session_end_timestamp
+        return [], None
+
+    def get_n_songs_listened_since(self, n, timestamp: pd.Timestamp):
+        songs = [
             song
             for session in self.session_list
             if timestamp < session.session_start_timestamp
             for song in session.get_song_listened_without_skiping()
         ]
+        return songs[:n] if n else songs
 
     # Sort session by date ascending
     def sort_sessions_by_date(self):
