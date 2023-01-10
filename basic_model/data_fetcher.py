@@ -1,27 +1,29 @@
 import pandas as pd
 from datetime import datetime
 
-# self.track_columns = [
-# "popularity",
-# "duration_ms",
-# "explicit",
-# "danceability",
-# "energy",
-# "key",
-# "loudness",
-# "speechiness",
-# "acousticness",
-# "instrumentalness",
-# "liveness",
-# "valence",
-# "tempo",
-# "year",
-# ]
-
 
 class DataFetcher:
     def __init__(self, track_columns) -> None:
-        self.track_columns = track_columns
+        self.track_columns = (
+            track_columns
+            if track_columns != "all"
+            else [
+                "popularity",
+                "duration_ms",
+                "explicit",
+                "danceability",
+                "energy",
+                "key",
+                "loudness",
+                "speechiness",
+                "acousticness",
+                "instrumentalness",
+                "liveness",
+                "valence",
+                "tempo",
+                "year",
+            ]
+        )
         self.tracks = pd.read_json("data/tracks.jsonl", lines=True)
         self.tracks["year"] = self.tracks.apply(
             lambda x: self.get_track_year(x["release_date"]), axis=1

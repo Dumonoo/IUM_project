@@ -2,6 +2,8 @@ from data_fetcher import DataFetcher
 from get_user_data import analyse_user
 from model import KNNModel
 from main2 import KMeanModel
+from random_model import RandomModel
+from popular_model import PopularModel
 
 
 def validate_model(model):
@@ -29,7 +31,7 @@ def validate_for_user(model, user_id):
 
 
 if __name__ == "__main__":
-    model = KMeanModel()
-    print("KMean:", validate_model(model))
-    model = KNNModel()
-    print("KNN:", validate_model(model))
+    print("KMean:", validate_model(KMeanModel()))
+    print("KNN:", validate_model(KNNModel()))
+    print("Random:", validate_model(RandomModel()))
+    print("Popular:", validate_model(PopularModel()))
