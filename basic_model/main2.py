@@ -10,42 +10,41 @@ from get_user_data import analyse_user
 from data_fetcher import DataFetcher
 
 
-class Model:
+class KMeanModel:
     def __init__(self) -> None:
-        self.data_fetcher = DataFetcher()
+        self.data_fetcher = DataFetcher(
+            [
+                "popularity",  # 0.06
+                "duration_ms",  # 0.53
+                "explicit",  # 0.02
+                "danceability",  # 0.44
+                "energy",  # 0.48
+                "key",  # 0.02
+                "loudness",  # 0.53
+                "speechiness",  # 0.48
+                "acousticness",  # 0.51
+                "instrumentalness",  # 0.46
+                "liveness",  # 0.53
+                "valence",  # 0.48
+                "tempo",  # 0.53
+                "year",  # 0.04
+            ]
+        )
         self.tracks = self.data_fetcher.tracks
 
     def train(self):
-        clean_tracks = self._clean_tracks(self.tracks)
-        self._fit_cluster(clean_tracks)
-
-    def validate(self):
-        self.train()
-        all_rates = []
-        for user in range(101, 151):
-            rate = self.validate_for_user(user)
-            if rate is None:
-                continue
-            all_rates.append(rate)
-        print("Total rate:", sum(all_rates) / len(all_rates))
-
-    def validate_for_user(self, user_id):
-        n = 10
-        userSessions = analyse_user(user_id)
-        userSessions.sort_sessions_by_date()
-        userSessions.all_session_list.reverse()
-        liked, session_end = userSessions.get_n_first_liked(n)
-        if not liked:
-            return None
-        recommended = self.recommend(liked)
-        later_songs = userSessions.get_n_songs_listened_since(None, session_end)
-        rating = len([song for song in recommended if song["id"] in later_songs]) / len(
-            liked
+        self.pipeline = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                ("kmeans", KMeans(n_clusters=14, verbose=0, n_init="auto")),
+            ],
         )
-        return rating
+        X = self.data_fetcher.get_training_data()
+        self.pipeline.fit(X)
 
     def recommend(self, liked, n=10):
-        metadata_columns = ["id", "name", "year"]
+        # metadata_columns = ["id", "name", "year"]
+        metadata_columns = ["id"]
         liked = [track for track in liked if track in self.tracks["id"].unique()]
         if not liked:
             return []
@@ -56,30 +55,11 @@ class Model:
         scaled_track_center = scaler.transform(mean_vector.reshape(1, -1))
         distances = cdist(scaled_track_center, scaled_data, "cosine")
         index = list(np.argsort(distances)[:, :n][0])
+        # print(index)
         rec_songs = self.tracks.iloc[index]
-        return rec_songs[metadata_columns].to_dict(orient="records")
-
-    def _clean_tracks(self, df: pd.DataFrame):
-        df = df.dropna(subset=["id"])
-        return df
-
-    def _fit_cluster(self, tracks: pd.DataFrame):
-        self.pipeline = Pipeline(
-            [
-                ("scaler", StandardScaler()),
-                ("kmeans", KMeans(n_clusters=14, verbose=0, n_init="auto")),
-            ],
-        )
-        X = self.data_fetcher.get_training_data()
-        self.pipeline.fit(X)
+        return rec_songs[metadata_columns].values
 
     def _get_mean_vector(self, liked_ids):
         tracks_vectors = self.data_fetcher.fetch_track_learnign_data(liked_ids)
         tracks_matrix = np.array(list(tracks_vectors))
         return np.mean(tracks_matrix, axis=0)
-
-
-if __name__ == "__main__":
-    model = Model()
-    # model.train()
-    model.validate()
