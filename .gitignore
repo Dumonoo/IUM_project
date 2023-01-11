@@ -3,5 +3,4 @@
 personal/
 venv/
 kpa/
-
-*/__pycache__/
+__pycache__/
