@@ -1,12 +1,12 @@
-from data_fetcher import DataFetcher
-from get_user_data import analyse_user
-from model import KNNModel
-from main2 import KMeanModel
-from random_model import RandomModel
-from popular_model import PopularModel
+from models.utils.get_user_data import analyse_user
+from models.kmean_model import KMeanModel
+from models.knn_model import KNNModel
+from models.random_model import RandomModel
+from models.popular_model import PopularModel
 
 
 def validate_model(model):
+    print("Stating validation")
     model.train()
     all_rates = []
     for user in range(101, 151):

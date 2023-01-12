@@ -1,4 +1,4 @@
-from data_fetcher import DataFetcher
+from models.utils.data_fetcher import DataFetcher
 
 
 class PopularModel:

@@ -91,6 +91,15 @@ class UserSessions:
         self.all_session_list: List[Session] = []
         self.sorted = False
 
+    def get_n_last_liked(self, n):
+        self.sort_sessions_by_date()
+        liked = []
+        for session in self.session_list:
+            liked.extend(session.get_songs_liked_set())
+            if len(liked) > n:
+                return liked, session.session_end_timestamp
+        return [], None
+
     def get_n_first_liked(self, n):
         self.sort_sessions_by_date()
         self.session_list.reverse()

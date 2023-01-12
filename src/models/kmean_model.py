@@ -1,13 +1,11 @@
 import numpy as np
-import pandas as pd
 from scipy.spatial.distance import cdist
 
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 
-from get_user_data import analyse_user
-from data_fetcher import DataFetcher
+from models.utils.data_fetcher import DataFetcher
 
 
 class KMeanModel:

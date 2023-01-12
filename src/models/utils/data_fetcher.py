@@ -28,7 +28,7 @@ class DataFetcher:
         self.tracks["year"] = self.tracks.apply(
             lambda x: self.get_track_year(x["release_date"]), axis=1
         )
-        self.tracks = self.tracks.dropna(subset=["id"])
+        self.tracks = self.tracks.dropna(subset=["id", "name"])
         self.tracks.fillna(0, inplace=True)
         self.sessions = pd.read_json("data/sessions.jsonl", lines=True)
         self.users = pd.read_json("data/users.jsonl", lines=True)
