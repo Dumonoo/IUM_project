@@ -36,3 +36,8 @@ def get_user_sessions_info(user_id: int):
 def get_user_sessions_info():
         # TODO
     return {"user_id": "yes"}
+
+@app.get("/run_tests/{advance_model}/{percentage_of_sessions}")
+def run_prediction_for_percentage_of_sessions(percentage_of_sessions: float, advance_model: bool = True):
+        # TODO
+    return {"user_id": "yes"}
