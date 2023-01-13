@@ -80,6 +80,7 @@ def get_ab_recommendation(user_id: int):
     else:
         # UNKOWN Group -> Model Random 
         log_error("The given user is not in any of the groups a and b", user_id=user_id)
+        model_name = ModelEnum.Random
         recommended = base_model.recommend(ids)
 
     recommended_list = data_fetcher.get_songs(recommended).tolist()
