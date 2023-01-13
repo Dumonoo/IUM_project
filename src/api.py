@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from datetime import datetime
 import pandas as pd
-
+from logger import log_info, log_error
 from models.validation.validation import validate_all_models
 from models.knn_model import KNNModel
 from models.random_model import RandomModel
@@ -54,11 +54,12 @@ def get_recommendation(model_name: ModelEnum, user_id: int):
     if model_name is ModelEnum.Random:
         recommended = base_model.recommend(ids)
     else:
-        # log unknown model_name
         # Model Random 
+        log_error(f"Uknown model {model_name.name}")
         recommended = base_model.recommend(ids)
 
     recommended_list = data_fetcher.get_songs(recommended).tolist()
+    log_info(user_id=user_id, recommended_tracks=recommended_list, model_name=model_name.name)
     return recommended_list
 
 # Recommend 10 tracks playlist for given user_id for today
@@ -67,17 +68,22 @@ def get_ab_recommendation(user_id: int):
     # TODO change this to function with will return information ready for model
     ids, timestamp = analyse_user(user_id).get_n_last_liked(10)
     recommended = []
+    model_name = ""
     if user_id in users_group_A:
         # Group A -> Model Random 
         recommended = base_model.recommend(ids)
+        model_name = ModelEnum.Random
     if user_id in users_group_B:
         # Group B -> Model KNN
         recommended = target_model.recommend(ids)
+        model_name = ModelEnum.KNN
     else:
-        # log user not in group A and B
-        # Group B -> Model Random 
+        # UNKOWN Group -> Model Random 
+        log_error("The given user is not in any of the groups a and b", user_id=user_id)
         recommended = base_model.recommend(ids)
+
     recommended_list = data_fetcher.get_songs(recommended).tolist()
+    log_info(user_id=user_id, recommended_tracks=recommended_list, model_name=model_name.name, is_AB=True)
     return recommended_list    
 
 
