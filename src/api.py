@@ -103,8 +103,3 @@ def get_recommendation_for_session_id(model_name: ModelEnum, user_id: int, sessi
 @app.get('/validate_models/')
 def validate_models():
     return validate_all_models()
-
-
-
-
-
