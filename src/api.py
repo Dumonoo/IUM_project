@@ -11,6 +11,14 @@ from models.validation.validation import validate_model
 from models.utils.get_user_data import analyse_user
 from models.utils.data_fetcher import DataFetcher
 
+class ModelEnum(Enum):
+    KNN = "KNN"
+    Random = "Random"
+
+# Group A -> Model Random Group B -> Model KNN
+users_group_A = [116, 130, 124, 138, 101, 142, 148, 144, 135, 136, 137, 122, 143, 125, 145, 107, 147, 126, 140, 146, 105, 129, 128, 103, 106]
+users_group_B = [127, 115, 110, 109, 133, 119, 149, 108, 112, 114, 131, 113, 141, 118, 139, 111, 134, 117, 102, 123, 132, 104, 120, 121, 150]
+
 
 app = FastAPI(title="App")
 model = KNNModel()
@@ -22,10 +30,57 @@ data_fetcher = DataFetcher(metadata_columns)
 
 @app.get("/")
 def root(request: Request):
-    html = f"<html><body><h1><a href='{request.url._url}docs'>Strona mikroserwisu</a></h1></body></html>"
+    html = f"<html><body><h1><a href='{request.url._url}docs'>Strona docs dla mikroserwisu</a></h1></body></html>"
     return HTMLResponse(html)
 
+# Main endpoints
+# Recommend 10 tracks playlist for given user_id for today with selected model
+@app.get('/recommendation/{model_name}/{user_id}')
+def get_recommendation(model_name: ModelEnum, user_id: int):
+    if model_name is ModelEnum.KNN:
+        ...
+    
+    if model_name is ModelEnum.Random:
+        ...
+    else:
+        ...
+        # log unknown model_name
+        # Model Random 
+    # return prediction
 
+# Recommend 10 tracks playlist for given user_id for today
+@app.get('/ab_recommendation/{user_id}')
+def get_ab_recommendation(user_id: int):
+    if user_id in users_group_A:
+        ...
+        # Group A -> Model Random 
+    if user_id in users_group_B:
+        ...
+        # Group B -> Model KNN
+    else:
+        ...
+        # log user not in group A and B
+        # Group B -> Model Random 
+
+    # return prediction
+
+# Additional endpoints for testing purposes
+# Recommend 10 tracks playlist for user_id with selected model using sessions before timestamp
+@app.get('/recommendation_for_timestamp/{model_name}/{timestamp}/{user_id}')
+def get_recommendation_for_timestamp(model_name: ModelEnum, user_id: int, timestamp: datetime):
+    ...
+
+# Recommend 10 tracks playlist for user_id with selected model using sessions before session_id
+@app.get('/recommendation_for_session_id/{model_name}/{session_id}/{user_id}')
+def get_recommendation_for_session_id(model_name: ModelEnum, user_id: int, session_id: int):
+    ...
+
+# Not needed
+@app.get('/get_user_sessions/{user_id}')
+def get_user_sessions_info(user_id: int):
+    ...
+
+# OLD CODE
 @app.get("/recommend_to_user/{user_id}")
 def recommend_to_user(user_id: int):
     liked, timestamp = analyse_user(user_id).get_n_last_liked(10)
@@ -33,40 +88,4 @@ def recommend_to_user(user_id: int):
     return data_fetcher.get_songs(recommended).tolist()
 
 
-class ModelEnum(Enum):
-    KNN = "KNN"
-    Random = "Random"
 
-
-@app.get("/recommend_by_date/{advance_model}/{timestamp}/{user_id}")
-def get_recommendation_by_time_cutoff(
-    user_id: int, timestamp: datetime, advance_model: bool = True
-):
-    # TODO
-    return {"user_id": user_id}
-
-
-@app.get("/recommend_by_session/{advance_model}/{session_id}/{user_id}")
-def get_recommendation_by_session_id(
-    user_id: int, session_id: int, advance_model: bool = True
-):
-    # TODO
-    return {"user_id": user_id}
-
-
-@app.get("/recommend/{advance_model}/{session_id}/{user_id}")
-def get_recommendation(user_id: int, session_id: int, advance_model: bool = True):
-    # TODO
-    return {"user_id": user_id}
-
-
-@app.get("/user_sessions/{user_id}")
-def get_user_sessions_info(user_id: int):
-    # TODO
-    return {"user_id": user_id}
-
-
-@app.get("/get_user_info")
-def get_user_sessions_info():
-    # TODO
-    return {"user_id": "yes"}
