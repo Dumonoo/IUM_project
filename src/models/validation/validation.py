@@ -30,6 +30,14 @@ def validate_for_user(model, user_id):
     later_songs = userSessions.get_n_songs_listened_since(None, session_end)
     return 1 if any([song in later_songs for song in recommended]) else 0
 
+def validate_all_models():
+    models_info = {
+        "KMean": validate_model(KMeanModel()),
+        "KNN" : validate_model(KNNModel()),
+        "Random": validate_model(RandomModel()),
+        "Popular": validate_model(PopularModel())
+    }
+    return models_info
 
 if __name__ == "__main__":
     print("KMean:", validate_model(KMeanModel()))
