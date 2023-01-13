@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from models.utils.get_user_data import analyse_user
 from models.kmean_model import KMeanModel
 from models.knn_model import KNNModel
