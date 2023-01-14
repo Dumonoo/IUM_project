@@ -14,13 +14,6 @@ class DataLoader:
         self.artists_transoformations()
         self.sessions_transoformations()
         self.tracks_transoformations()
-        ...
-    
-    def test(self):
-        return "Test2"
-    
-
-
 
     # Grabbers ???
     def get_tracks_of_genres(self, genres: List[str])-> List[str]:
@@ -98,14 +91,16 @@ class DataLoader:
             if check_ids is None:
                 check_ids = self.combined_session_info_new(user_id, f, estaminators)
             else:  
-                check_ids = pd.concat([input_ids, self.combined_session_info_new(user_id, f, estaminators)])
-        check_ids = check_ids.groupby('track_id')['estimation'].sum().reset_index().sort_values(by='estimation',ascending=False)      
+                check_ids = pd.concat([check_ids, self.combined_session_info_new(user_id, f, estaminators)])
+        check_ids = check_ids.groupby('track_id')['estimation'].sum().reset_index().sort_values(by='estimation',ascending=False)    
         return input_ids, check_ids
 
     def calcate_score(self, recommended_ids:List[str], check_ids):
+        # print(recommended_ids, check_ids)
         score = 0
         for index, row in check_ids[check_ids['track_id'].isin(recommended_ids)].iterrows():
             score += row['estimation']
+        # print("Score: ", score)
         return score/len(recommended_ids)
 
 
@@ -175,3 +170,42 @@ class DataLoader:
 
     def get_tracks(self):
         return self.tracks
+
+    def get_tracks_for_model(self, columns):
+        track_columns = (
+            columns
+            if columns != "all"
+            else [
+                "popularity",
+                "duration_ms",
+                "explicit",
+                "danceability",
+                "energy",
+                "key",
+                "loudness",
+                "speechiness",
+                "acousticness",
+                "instrumentalness",
+                "liveness",
+                "valence",
+                "tempo",
+                "year",
+            ]
+        )
+        return self.get_tracks()[track_columns]
+
+    def get_indexes_of_tracks(self, track_list_ids: List[str]):
+        ids_list = []
+        for track_id in track_list_ids:
+            ids_list.append(self.tracks.loc[self.tracks['id'] == track_id].index[0])
+        return ids_list
+
+    def get_ids_of_given_ids(self, track_indexes):
+        return self.tracks.iloc[track_indexes]['id'].values
+
+    # Analysis purposes
+    def get_life(self, user_id:int):
+        user_sessions = self.get_sessions_list_in_order(user_id)
+
+        return user_sessions
+        ...
