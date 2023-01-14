@@ -9,5 +9,5 @@ class RandomModelGenres:
     def recommend(self, ids, usr_id):
         usr_fav_genres = self.data_obj.get_user_fav_genres(usr_id)
         genres_tracks = self.data_obj.get_tracks_of_genres(usr_fav_genres)
-        genres_tracks[~genres_tracks["id"].isin(ids)]
+        # genres_tracks[~genres_tracks["id"].isin(ids)]
         return genres_tracks.sample(10)["id"].values

@@ -84,6 +84,24 @@ class DataLoader:
         check_ids = check_ids.groupby('track_id')['estimation'].sum().reset_index().sort_values(by='estimation',ascending=False)      
         return input_ids, check_ids
 
+    def get_input_and_check_ids_new(self, user_id: int, history_ids:List[int], future_ids:List[int], estaminators):
+        input_ids = None
+        check_ids = None
+        for h in history_ids:
+            if input_ids is None:
+                input_ids = self.combined_session_info_new(user_id, h, estaminators)
+            else:
+                input_ids = pd.concat([input_ids, self.combined_session_info_new(user_id, h, estaminators)])
+        input_ids = input_ids.groupby('track_id')['estimation'].sum().reset_index().sort_values(by='estimation',ascending=False)
+
+        for f in future_ids:
+            if check_ids is None:
+                check_ids = self.combined_session_info_new(user_id, f, estaminators)
+            else:  
+                check_ids = pd.concat([input_ids, self.combined_session_info_new(user_id, f, estaminators)])
+        check_ids = check_ids.groupby('track_id')['estimation'].sum().reset_index().sort_values(by='estimation',ascending=False)      
+        return input_ids, check_ids
+
     def calcate_score(self, recommended_ids:List[str], check_ids):
         score = 0
         for index, row in check_ids[check_ids['track_id'].isin(recommended_ids)].iterrows():
@@ -97,6 +115,10 @@ class DataLoader:
         assesments = assesments.loc[assesments['session_id'] == session_id]
         return assesments.groupby('track_id')['estimation'].sum().reset_index().sort_values(by='estimation',ascending=False)
 
+    def combined_session_info_new(self, user_id: int, session_id: int, assessment_data):
+        assesments = assessment_data
+        assesments = assesments.loc[assesments['session_id'] == session_id]
+        return assesments.groupby('track_id')['estimation'].sum().reset_index().sort_values(by='estimation',ascending=False)
 
     def get_track_listen_count_by_user(self, user_id: int, track_id: str):
         usr_session = self.get_user_sessions(user_id)
