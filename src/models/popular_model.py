@@ -6,11 +6,13 @@ class PopularModel:
         self.fetcher = DataFetcher("id")
         ...
 
-    def train(self):
-        ...
+    def train(self, user):
+        self.tracks = self.fetcher.get_training_data(user)
 
     def recommend(self, ids):
-        tracks = self.fetcher.tracks
-        tracks = tracks[~tracks["id"].isin(ids)]
-        test = tracks.sort_values(by=["popularity"]).tail(10)
+        self.tracks = self.tracks[~self.tracks["id"].isin(ids)]
+        test = self.tracks.sort_values(by=["popularity"]).tail(10)
         return test["id"].values
+
+    def reset(self):
+        self.tracks = []

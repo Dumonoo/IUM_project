@@ -30,8 +30,9 @@ class KNNModel:
             n_neighbors=10, metric="cosine", algorithm="brute"
         )
 
-    def train(self):
-        X = self.data_fethcher.get_training_data()
+    def train(self, user=None):
+        self.data = self.data_fethcher.get_training_data(user)
+        X = self.data_fethcher.get_training_for_songs(self.data)
         X = self.scaler.fit_transform(X)
         self.model.fit(X)
 
@@ -39,12 +40,18 @@ class KNNModel:
         songs = self.data_fethcher.get_songs(ids)
         X = self.scaler.transform(songs)
         distances, indices = self.model.kneighbors(X)
-        indices = [self.data_fethcher.get_by_index(row)["id"].values for row in indices]
+        indices = [self.data.iloc[row]["id"].values for row in indices]
         indices = [index for row in indices for index in row]
         distances = [dist for row in distances for dist in row]
         recommended = zip(indices, distances)
 
         recommended = [v for v in recommended if v[0] not in ids]
-        recommended = sorted(recommended, key=lambda x: x[1])[:10]
+        recommended = sorted(recommended, key=lambda x: x[1])[-10:]
         recommended = [index for index, dist in recommended]
         return recommended
+
+    def reset(self):
+        self.scaler = StandardScaler()
+        self.model = NearestNeighbors(
+            n_neighbors=10, metric="cosine", algorithm="brute"
+        )

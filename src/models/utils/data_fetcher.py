@@ -24,14 +24,15 @@ class DataFetcher:
                 "year",
             ]
         )
-        self.tracks = pd.read_json("data/tracks.jsonl", lines=True)
-        self.tracks["year"] = self.tracks.apply(
-            lambda x: self.get_track_year(x["release_date"]), axis=1
-        )
-        self.tracks = self.tracks.dropna(subset=["id", "name"])
-        self.tracks.fillna(0, inplace=True)
         self.users = pd.read_json("data/users.jsonl", lines=True)
+        self.read_tracks()
         self.read_sessions()
+
+    def read_tracks(self):
+        df = pd.read_json("data/tracks.jsonl", lines=True)
+        df["year"] = df.apply(lambda x: self.get_track_year(x["release_date"]), axis=1)
+        df = df.dropna()
+        self.tracks = df
 
     def read_sessions(self):
         self.sessions = (
@@ -41,10 +42,18 @@ class DataFetcher:
             .drop_duplicates(subset=["user_id", "track_id"], keep="last")
         )
 
+    def get_all_rated(self, user):
+        return self.sessions[self.sessions["user_id"] == user]
+        ...
+
     def get_all_liked_by_user(self, user):
         user_sessions = self.sessions[self.sessions["user_id"] == user]
         return user_sessions[user_sessions["event_type"] == "like"]["track_id"].values
-    
+
+    def get_all_skipped_by_user(self, user):
+        user_sessions = self.sessions[self.sessions["user_id"] == user]
+        return user_sessions[user_sessions["event_type"] == "skip"]["track_id"].values
+
     def get_all_listened_to_by_user(self, user):
         user_sessions = self.sessions[self.sessions["user_id"] == user]
         return user_sessions[user_sessions["event_type"] == "play"]["track_id"].values
@@ -60,8 +69,25 @@ class DataFetcher:
             self._get_validation_data_for_user(user) for user in self.users["user_id"]
         ]
 
-    def get_training_data(self):
-        return self.tracks[self.track_columns].values
+    def get_training_for_songs(self, songs):
+        return self.tracks[self.tracks["id"].isin(songs["id"].values)][
+            self.track_columns
+        ].values
+
+    def get_columns(self, songs):
+
+        return self.tracks[self.tracks["id"].isin(songs)][self.track_columns].values
+
+    def get_training_data(self, user):
+        if user is None:
+            return self.tracks
+        else:
+            liked = self.get_all_liked_by_user(user)
+            listened = self.get_all_listened_to_by_user(user)
+            skipped = self.get_all_skipped_by_user(user)
+            sessions = self.get_all_rated(user)
+            rated_tracks = sessions["track_id"].values
+            return self.tracks[self.tracks["id"].isin(rated_tracks)]
 
     def _get_validation_data_for_user(self, user):
         data = self.sessions
