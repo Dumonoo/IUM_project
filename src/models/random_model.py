@@ -10,4 +10,6 @@ class RandomModel:
         ...
 
     def recommend(self, ids):
-        return self.fetcher.tracks.sample(10)["id"].values
+        tracks = self.fetcher.tracks
+        tracks = tracks[~tracks["id"].isin(ids)]
+        return tracks.sample(10)["id"].values

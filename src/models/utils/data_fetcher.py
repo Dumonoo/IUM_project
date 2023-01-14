@@ -30,8 +30,24 @@ class DataFetcher:
         )
         self.tracks = self.tracks.dropna(subset=["id", "name"])
         self.tracks.fillna(0, inplace=True)
-        self.sessions = pd.read_json("data/sessions.jsonl", lines=True)
         self.users = pd.read_json("data/users.jsonl", lines=True)
+        self.read_sessions()
+
+    def read_sessions(self):
+        self.sessions = (
+            pd.read_json("data/sessions.jsonl", lines=True)
+            .dropna(subset=["user_id", "track_id", "event_type"])
+            .sort_values(by="timestamp")
+            .drop_duplicates(subset=["user_id", "track_id"], keep="last")
+        )
+
+    def get_all_liked_by_user(self, user):
+        user_sessions = self.sessions[self.sessions["user_id"] == user]
+        return user_sessions[user_sessions["event_type"] == "like"]["track_id"].values
+    
+    def get_all_listened_to_by_user(self, user):
+        user_sessions = self.sessions[self.sessions["user_id"] == user]
+        return user_sessions[user_sessions["event_type"] == "play"]["track_id"].values
 
     def get_songs(self, ids):
         return self.tracks[self.tracks["id"].isin(ids)][self.track_columns].values

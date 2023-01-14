@@ -53,8 +53,8 @@ class KMeanModel:
         scaled_track_center = scaler.transform(mean_vector.reshape(1, -1))
         distances = cdist(scaled_track_center, scaled_data, "cosine")
         index = list(np.argsort(distances)[:, :n][0])
-        # print(index)
         rec_songs = self.tracks.iloc[index]
+        rec_songs = rec_songs[~rec_songs["id"].isin(liked)]
         return rec_songs[metadata_columns].values
 
     def _get_mean_vector(self, liked_ids):

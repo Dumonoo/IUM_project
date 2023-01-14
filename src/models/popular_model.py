@@ -10,6 +10,7 @@ class PopularModel:
         ...
 
     def recommend(self, ids):
-        self.tracks = self.fetcher.tracks
-        test = self.tracks.sort_values(by=["popularity"]).tail(10)
+        tracks = self.fetcher.tracks
+        tracks = tracks[~tracks["id"].isin(ids)]
+        test = tracks.sort_values(by=["popularity"]).tail(10)
         return test["id"].values

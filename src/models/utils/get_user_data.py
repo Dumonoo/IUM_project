@@ -91,6 +91,13 @@ class UserSessions:
         self.all_session_list: List[Session] = []
         self.sorted = False
 
+    def get_all_liked(self):
+        self.sort_sessions_by_date()
+        liked = set()
+        for session in self.session_list:
+            liked = liked | set(session.get_songs_liked_set())
+        return list(liked)
+
     def get_n_last_liked(self, n):
         self.sort_sessions_by_date()
         liked = []
