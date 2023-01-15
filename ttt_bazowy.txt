@@ -48,7 +48,7 @@ User: 147 - Avg.Score: 0.13421052631578947 in 38 tests
 User: 148 - Avg.Score: 0.06315789473684211 in 19 tests
 User: 149 - Avg.Score: 0.20344827586206896 in 29 tests
 User: 150 - Avg.Score: 0.15714285714285714 in 21 tests
-Podsumowanie 0.45259326660600546
+
 dumono@ubuntu:~/Documents/dev/ium/new_branch/IUM_project$ ./main.py
 Co ma byc to bedzie
 User: 101 - Avg.Score: 0.5636363636363637 in 33 tests
@@ -101,4 +101,5 @@ User: 147 - Avg.Score: 0.2868421052631578 in 38 tests
 User: 148 - Avg.Score: 0.23157894736842102 in 19 tests
 User: 149 - Avg.Score: 0.1896551724137931 in 29 tests
 User: 150 - Avg.Score: 0.20476190476190476 in 21 tests
-Podsumowanie 0.2580527752502274
+Bazowy 0.2580527752502274
+Docelowy 0.45259326660600546
