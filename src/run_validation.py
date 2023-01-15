@@ -34,46 +34,38 @@ def validate_knn_class():
     print(tp / (tp + fp))
 
 
-def validate_regression():
-    user = 101
-    fetcher = DataFetcher("all")
+def validate(data, base=False):
     all_errors = []
-    for user in range(100, 151):
-        X, y = fetcher.read_avg_listen(user)
-        if len(X) < 10:
+    bis = []
+    for user in range(101, 151):
+        X, y = data[user]
+        if len(X) < 10 or len(y) < 10:
             continue
-        model = RegressionRecommender()
+        model = RandomRegression() if base else RegressionRecommender()
         train_X, test_X, train_y, test_y = train_test_split(
             X, y, test_size=0.2, shuffle=False
         )
         model.train(train_X, train_y)
         prediction = model.predict(test_X)
         all_errors.append(mean_squared_error(test_y, prediction))
-    print(sum(all_errors) / len(all_errors))
-
-
-def validation_random_regression():
-    fetcher = DataFetcher("all")
-    all_errors = []
-    for seed in range(10):
-        random.seed(1)
-        for user in range(100, 151):
-            X, y = fetcher.read_avg_listen(user)
-            if len(X) < 10:
-                continue
-            model = RandomRegression()
-            train_X, test_X, train_y, test_y = train_test_split(
-                X, y, test_size=0.2, shuffle=False
-            )
-            model.train(train_X, train_y)
-            prediction = model.predict(test_X)
-            all_errors.append(mean_squared_error(test_y, prediction))
-    print(sum(all_errors) / len(all_errors))
+        pred_and_test = list(zip(prediction, test_y))
+        bis.append(
+            len([t for p, t in pred_and_test if p >= 0.8 and t >= 0.8])
+            / len(list(pred_and_test)),
+        )
+    print("Base:" if base else "Model:")
+    print("MAE:", sum(all_errors) / len(all_errors))
+    print("BIS:", sum(bis) / len(bis))
 
 
 if __name__ == "__main__":
-    validate_regression()
-    validation_random_regression()
+    fetcher = DataFetcher("all")
+    data = {user: fetcher.read_avg_listen(user) for user in range(101, 151)}
+    validate(data, False)
+    validate(data, True)
+    # validate_regression()
+    # validation_random_regression()
+
     # load = DataLoader()
     # load.get_user_sessions_with_estimations(101)
     # validate_knn_class()

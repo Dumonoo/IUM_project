@@ -53,7 +53,15 @@ class DataFetcher:
         listened = user_tracks.apply(
             lambda x: self.count_avg_for_track(x, user_sessions), axis=1
         )
-        return user_tracks, listened
+        user_tracks = user_tracks.assign(listened=listened)
+        user_tracks = user_tracks.assign(label=listened.apply(lambda x: x > 0.8))
+        max_size = user_tracks["label"].value_counts().max()
+        lst = [user_tracks]
+        for class_index, group in user_tracks.groupby("label"):
+            n = max_size - len(group)
+            lst.append(group.sample(n // 2, replace=True))
+        df = pd.concat(lst)
+        return df, df["listened"]
 
     def count_avg_for_track(self, track, sessions):
         listened = []
