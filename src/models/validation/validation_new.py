@@ -46,6 +46,18 @@ def validate_user_score(model, user_id):
 
     ...
 def check_recommendations(recommendations: List[str], user_id: int, session_id: int):
+    score = 0
+    if len(recommendations) != 10:
+        print(f"WARNING User {user_id} Session {session_id} LESS THEN 10 tracks {len(recommendations)}")
+        
+    future_sessions = data_loader.get_user_future_sessions(user_id, session_id)
+    for index, session in future_sessions.iterrows():
+        if session['track_id'] in recommendations and session['event_type'] == 'play':
+            score += 1
+        if session['track_id'] in recommendations and session['event_type'] == 'like':
+            score += 1.5
+    return score/len(recommendations)
+
     # Calculate score over future of user sessions
     ...
 def recommend(user_id, session_id):
