@@ -54,7 +54,7 @@ def log_info(user_id:int, recommended_tracks: List[UUID], model_name: str , is_A
 
 def log_error(log_error_message: str, user_id: int = None):
     save_log_to_file(prepere_log_error(log_error_message, user_id=user_id))
-    save_log_to_json_file(prepere_log_error(log_error_message, user_id=user_id))
+    save_log_to_json_file(prepere_log_error_json(log_error_message, user_id=user_id))
 
 def save_log_to_file(message, file_name = LOG_FILE_NAME_TXT):
     with open(f"{LOG_FILE_FULL_PATH}/{file_name}", mode="a") as log_file:

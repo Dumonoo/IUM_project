@@ -1,7 +1,7 @@
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import pandas as pd
-from src.models.utils.data_loader import DataLoader
+from models.utils.data_loader import DataLoader
 
 from collections import Counter
 

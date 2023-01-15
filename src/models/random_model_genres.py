@@ -1,4 +1,4 @@
-from src.models.utils.data_loader import DataLoader
+from models.utils.data_loader import DataLoader
 
 class RandomModelGenres:
     def __init__(self) -> None:

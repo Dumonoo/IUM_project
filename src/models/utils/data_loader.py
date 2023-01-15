@@ -21,6 +21,8 @@ class DataLoader:
         # self.tracks = self.get_tracks()[['id', 'id_artist', 'name']].join(self.get_artists()[['id', 'genres']].set_index('id'), on='id_artist')
         self.calcualte_estaminations()
 
+    def get_user_last_session(self, user_id):
+        return self.sessions.loc[self.sessions['user_id']== user_id].tail(1)['session_id'].values[0]
     # Grabbers ???
     def get_tracks_of_genres(self, genres: List[str])-> List[str]:
         tracks_of_genres = []

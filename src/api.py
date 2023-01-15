@@ -5,12 +5,12 @@ from fastapi.responses import HTMLResponse
 from datetime import datetime
 import pandas as pd
 from logger import log_info, log_error
-from models.validation.validation import validate_all_models
 from models.knn_model import KNNModel
-from models.random_model import RandomModel
-from models.validation.validation import validate_model
-from models.utils.get_user_data import analyse_user
-from models.utils.data_fetcher import DataFetcher
+from models.random_model_genres import RandomModelGenres
+from models.utils.data_loader import DataLoader
+
+
+
 
 class ModelEnum(Enum):
     KNN = "KNN"
@@ -24,16 +24,12 @@ users_group_B = [127, 115, 110, 109, 133, 119, 149, 108, 112, 114, 131, 113, 141
 app = FastAPI(title="Recomenndation_API")
 
 # Model preparation
-base_model = RandomModel()
+base_model = RandomModelGenres()
 base_model.train()
 target_model = KNNModel()
 target_model.train()
 
-model = KNNModel()
-model.train()
-
-metadata_columns = ["id", "name", "year"]
-data_fetcher = DataFetcher(metadata_columns)
+data_loader = DataLoader()
 
 
 @app.get("/")
@@ -46,58 +42,64 @@ def root(request: Request):
 @app.get('/recommendation/{model_name}/{user_id}')
 def get_recommendation(model_name: ModelEnum, user_id: int):
     # TODO change this to function with will return information ready for model
-    ids, timestamp = analyse_user(user_id).get_n_last_liked(10)
+
+    session_id = data_loader.get_user_last_session(user_id)
     recommended = []
     if model_name is ModelEnum.KNN:
-        recommended = target_model.recommend(ids)
+        recommended = target_model.recommend(user_id, session_id)
     
     if model_name is ModelEnum.Random:
-        recommended = base_model.recommend(ids)
+        recommended = base_model.recommend(user_id, session_id)
     else:
         # Model Random 
         log_error(f"Uknown model {model_name.name}")
-        recommended = base_model.recommend(ids)
+        recommended = base_model.recommend(user_id, session_id)
 
-    recommended_list = data_fetcher.get_songs(recommended).tolist()
+    recommended_list = list(recommended)
     log_info(user_id=user_id, recommended_tracks=recommended_list, model_name=model_name.name)
     return recommended_list
 
 # Recommend 10 tracks playlist for given user_id for today
 @app.get('/ab_recommendation/{user_id}')
 def get_ab_recommendation(user_id: int):
-    # TODO change this to function with will return information ready for model
-    ids, timestamp = analyse_user(user_id).get_n_last_liked(10)
+    session_id = data_loader.get_user_last_session(user_id)
     recommended = []
     model_name = ""
+    print(user_id)
     if user_id in users_group_A:
         # Group A -> Model Random 
-        recommended = base_model.recommend(ids)
+        recommended = base_model.recommend(user_id, session_id)
         model_name = ModelEnum.Random
     if user_id in users_group_B:
         # Group B -> Model KNN
-        recommended = target_model.recommend(ids)
+        recommended = target_model.recommend(user_id, session_id)
         model_name = ModelEnum.KNN
-    else:
+    if user_id not in users_group_A and user_id not in users_group_B:
         # UNKOWN Group -> Model Random 
         log_error("The given user is not in any of the groups a and b", user_id=user_id)
         model_name = ModelEnum.Random
-        recommended = base_model.recommend(ids)
+        recommended = base_model.recommend(user_id, session_id)
 
-    recommended_list = data_fetcher.get_songs(recommended).tolist()
+    recommended_list = list(recommended)
     log_info(user_id=user_id, recommended_tracks=recommended_list, model_name=model_name.name, is_AB=True)
     return recommended_list    
 
-
-# Additional endpoints for testing purposes
-# Recommend 10 tracks playlist for user_id with selected model using sessions before timestamp
-@app.get('/recommendation_for_timestamp/{model_name}/{timestamp}/{user_id}')
-def get_recommendation_for_timestamp(model_name: ModelEnum, user_id: int, timestamp: datetime):
-    ...
-
-# Recommend 10 tracks playlist for user_id with selected model using sessions before session_id
 @app.get('/recommendation_for_session_id/{model_name}/{session_id}/{user_id}')
 def get_recommendation_for_session_id(model_name: ModelEnum, user_id: int, session_id: int):
-    ...
+    recommended = []
+    if model_name is ModelEnum.KNN:
+        recommended = target_model.recommend(user_id, session_id)
+    
+    if model_name is ModelEnum.Random:
+        recommended = base_model.recommend(user_id, session_id)
+    else:
+        # Model Random 
+        log_error(f"Uknown model {model_name.name}")
+        recommended = base_model.recommend(user_id, session_id)
+
+    recommended_list = list(recommended)
+    log_info(user_id=user_id, recommended_tracks=recommended_list, model_name=model_name.name, is_AB=True)
+    return recommended_list 
 
 # Validate both all models and return infomation about them
 @app.get('/validate_models/')
