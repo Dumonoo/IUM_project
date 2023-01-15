@@ -47,7 +47,7 @@ class RandomRegression:
         ...
 
     def predict(self, songs):
-        return songs.apply(lambda x: 1, axis=1)
+        return songs.apply(lambda x: random.uniform(0.5, 1), axis=1)
         X = songs[self.meta_columns].values
         X = self.scaler.transform(X)
         return self.knn.predict(X)

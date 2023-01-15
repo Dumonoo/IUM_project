@@ -49,9 +49,10 @@ def validate(data, base=False):
         prediction = model.predict(test_X)
         all_errors.append(mean_squared_error(test_y, prediction))
         pred_and_test = list(zip(prediction, test_y))
+        pred_and_test = sorted(pred_and_test, key=lambda x: x[0])
         bis.append(
-            len([t for p, t in pred_and_test if p >= 0.8 and t >= 0.8])
-            / len(list(pred_and_test)),
+            len([t for p, t in pred_and_test[-10:] if p >= 0.75 and t >= 0.75])
+            / len(list(pred_and_test[:10])),
         )
     print("Base:" if base else "Model:")
     print("MAE:", sum(all_errors) / len(all_errors))
