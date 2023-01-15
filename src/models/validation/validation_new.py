@@ -19,8 +19,8 @@ def validate_system():
     rd = RandomModelGenres()
     model = rd
     for user in range(101, 151):
-        score_avg = validate_user_score(model, user)
-        # print(f"User: {user} - Avg.Score: {score_avg}")
+        score_avg, tests = validate_user_score(model, user)
+        print(f"User: {user} - Avg.Score: {score_avg} in {tests} tests")
 
 def validate_user_score(model, user_id):
     
@@ -37,29 +37,30 @@ def validate_user_score(model, user_id):
     user_score = 0
     for session_id in user_train:
         tests_counter += 1
-        recommendations_ids = model.recommend(user_id, session_id)
+        recommendations_ids = model.recommend2(user_id, session_id)
         user_score += check_recommendations(recommendations_ids, user_id, session_id)
-        # print(session_id)
-    print(f"User {user_id} tests_counter{tests_counter}")
+        # print(f"Test :{session_id} - {user_score}")
+    # print(f"User {user_id} tests_counter{tests_counter} ACR: {user_score/tests_counter}")
     return user_score/tests_counter, tests_counter
 
 
-    ...
 def check_recommendations(recommendations: List[str], user_id: int, session_id: int):
-    score = 0
     if len(recommendations) != 10:
         print(f"WARNING User {user_id} Session {session_id} LESS THEN 10 tracks {len(recommendations)}")
-        
+
+    score = 0
     future_sessions = data_loader.get_user_future_sessions(user_id, session_id)
     for index, session in future_sessions.iterrows():
         if session['track_id'] in recommendations and session['event_type'] == 'play':
+            # print("ODTWORZYL")
             score += 1
         if session['track_id'] in recommendations and session['event_type'] == 'like':
-            score += 1.5
+            # print("POLUBIl")
+            score += 2
     return score/len(recommendations)
 
     # Calculate score over future of user sessions
-    ...
+
 def recommend(user_id, session_id):
     ... # mozna zamiast przekazywania session_data_with_marks obliczyc to dla wszysktich userow przy logowaniu 
     # Na podstawie user_id odnajdujemy sesjie uzytkownika

@@ -302,3 +302,8 @@ class DataLoader:
                 genre_counter[g] += 1
         most_common_genres = [x[0] for x in genre_counter.most_common(n_genres)]
         return most_common_genres
+
+    def get_user_future_sessions(self, user_id, session_id):
+        user_sessions = self.sessions.loc[self.sessions['user_id'] == user_id]
+        crit_day = user_sessions.loc[user_sessions['session_id'] == session_id]['date'].values[0]
+        return user_sessions.loc[user_sessions['date'] > crit_day]
