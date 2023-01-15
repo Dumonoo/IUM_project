@@ -33,6 +33,10 @@ class DataLoader:
 
         return tracks_of_genres
 
+    def check_if_session_is_user(self, session_id, user_id):
+        return not self.sessions.query(f"user_id == {user_id} & session_id == {session_id}").empty
+        
+
     def get_track_popularity(self, id):
         return self.tracks.loc[self.tracks['id'] == id]['popularity'].values[0]
 

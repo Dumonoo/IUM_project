@@ -65,7 +65,6 @@ def get_ab_recommendation(user_id: int):
     session_id = data_loader.get_user_last_session(user_id)
     recommended = []
     model_name = ""
-    print(user_id)
     if user_id in users_group_A:
         # Group A -> Model Random 
         recommended = base_model.recommend(user_id, session_id)
@@ -87,6 +86,8 @@ def get_ab_recommendation(user_id: int):
 @app.get('/recommendation_for_session_id/{model_name}/{session_id}/{user_id}')
 def get_recommendation_for_session_id(model_name: ModelEnum, user_id: int, session_id: int):
     recommended = []
+    if not data_loader.check_if_session_is_user(session_id, user_id):
+        return []
     if model_name is ModelEnum.KNN:
         recommended = target_model.recommend(user_id, session_id)
     
@@ -101,7 +102,3 @@ def get_recommendation_for_session_id(model_name: ModelEnum, user_id: int, sessi
     log_info(user_id=user_id, recommended_tracks=recommended_list, model_name=model_name.name, is_AB=True)
     return recommended_list 
 
-# Validate both all models and return infomation about them
-@app.get('/validate_models/')
-def validate_models():
-    return validate_all_models()
