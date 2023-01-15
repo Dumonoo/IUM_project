@@ -1,6 +1,6 @@
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
-
+import pandas as pd
 from src.models.utils.data_loader import DataLoader
 
 from collections import Counter
@@ -30,7 +30,8 @@ class KNNModel:
         self.tracks_data = self.data_obj.get_tracks()
         self.scaler = StandardScaler()
         self.model = NearestNeighbors(
-            n_neighbors=5, metric="cosine", algorithm="brute"
+            n_neighbors=14, metric="cosine"
+            # , algorithm="brute"
         )
         self.training_data = self.tracks_data[choosen_cols]
 
@@ -40,12 +41,48 @@ class KNNModel:
         self.model.fit(X)
 
     def recommend2(self, user_id, session_id):
-        # Na podstawie 
+        # Najpopularniejsze gatunki w sesji session_id
+        user_most_popular_genres_in_session = self.data_obj.get_user_popular_genres_in_session(user_id, session_id, 3)
+        # Ocena aktualnej sesji 
+        user_session_info = self.data_obj.get_super_user_info(user_id, session_id)
+        session_estaminate = user_session_info.groupby('track_id')['estimation'].sum().reset_index().sort_values(by='estimation',ascending=False)
+        session_estaminate['popularity'] = self.data_obj.get_tracks_popularity(session_estaminate['track_id'].values)
+
+        # Juz przesluchane utwory do tej pory
+        listened_tracks = self.data_obj.get_listened_tracks(user_id, session_id)
+        session_estaminate = session_estaminate.sort_values(['estimation', 'popularity'], ascending = [False, False])
+        TOP_G = 4
+
+        top_g_ids = session_estaminate['track_id'].values[:TOP_G]
+
+        input_songs_data = self.tracks_data[self.tracks_data['id'].isin(top_g_ids)][choosen_cols].values
+        input_indexes = self.data_obj.get_indexes_of_tracks(top_g_ids)
+
+        # Model
+        X = self.scaler.transform(input_songs_data)
+        distances, indices = self.model.kneighbors(X)
+        recommended_indexes = [x for line in indices for x in line]
+        recommended_id = self.data_obj.get_ids_of_given_ids(recommended_indexes)
+
+        ranking = pd.DataFrame({'id': recommended_id, 'popularity': self.data_obj.get_tracks_popularity(recommended_id)})
+        ranking_without_old = ranking[~ranking['id'].isin(listened_tracks)]
+        return ranking_without_old.sort_values('popularity', ascending=False)['id'].values[:10]
+        # print(top_g_ids)
+        # print(distances, indices)
+        # print(self.data_obj.get_tracks_popularity(session_estaminate['track_id'].values))
+        # print(user_session_info)
+        # print(listened_tracks)
+
+        # print(user_session_info.groupby('track_id')['estimation'].sum().reset_index().sort_values(by='estimation',ascending=False))
+        # groupby('track_id')['estimation'].sum().reset_index().sort_values(by='estimation',ascending=False)
+        # Na podstawie czegosc
         ...
+        # Trzeba wymyslec cos lekko lepszego od bazowego
+
 
 
     def recommend(self, ids, user_id):
-        # print(ids)
+
         input_songs_data = self.tracks_data[self.tracks_data['id'].isin(ids)][choosen_cols].values
         input_indexes = self.data_obj.get_indexes_of_tracks(ids)
         X = self.scaler.transform(input_songs_data)

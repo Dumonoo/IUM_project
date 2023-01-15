@@ -1,5 +1,5 @@
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
 from collections import Counter
 
@@ -19,6 +19,7 @@ class DataLoader:
         # Extra tables
         self.sessions_with_genres = self.sessions.join(self.get_tracks()[['id', 'id_artist', 'popularity']].set_index('id'), on='track_id').join(self.get_artists()[['id', 'genres']].set_index('id'), on='id_artist')
         # self.tracks = self.get_tracks()[['id', 'id_artist', 'name']].join(self.get_artists()[['id', 'genres']].set_index('id'), on='id_artist')
+        self.calcualte_estaminations()
 
     # Grabbers ???
     def get_tracks_of_genres(self, genres: List[str])-> List[str]:
@@ -260,12 +261,30 @@ class DataLoader:
         # print(all_sessions)
         # print(self.sessions.groupby('date', group_keys=True).apply(lambda x: x).reset_index())
 
+    def get_popularity_of_track(self, track_id):
+        return self.tracks.loc[self.tracks['id'] == track_id]['popularity']
+
+    def  get_tracks_popularity(self, track_ids):
+        pop = []
+        for t in track_ids:
+            pop.append(self.get_track_popularity(t))
+        return pop
     # Nowy porzadek
+    def get_listened_tracks(self, user_id, session_id):
+        user_sessions = self.sessions.loc[self.sessions['user_id'] == user_id]
+        crit_day = user_sessions.loc[user_sessions['session_id'] == session_id]['date'].values[0]
+        return user_sessions.loc[user_sessions['date'] <= crit_day]['track_id'].unique()
+
     def calcualte_estaminations(self):
         # liczy estamination dla wszystkich naraz
-            
-        for i,r in self.get_sessions().groupby('user_id'):
-            print(r)
+        estaminators = self.get_sessions()
+        estaminators['estimation'] = 0
+        estaminators.loc[estaminators['event_type'] == 'play', 'estimation'] = 1
+        estaminators.loc[estaminators['event_type'] == 'like', 'estimation'] = 1
+        estaminators.loc[estaminators['event_type'] == 'skip', 'estimation'] = -0.5
+        # estaminators['popularity'] = self.get_track_popularity(estaminators['track_id'])
+        
+        self.estimatores = estaminators
 
     def get_user_sessions_with_estimations(self, user_id: int):
         estimations = self.get_user_sessions(user_id)
@@ -307,3 +326,6 @@ class DataLoader:
         user_sessions = self.sessions.loc[self.sessions['user_id'] == user_id]
         crit_day = user_sessions.loc[user_sessions['session_id'] == session_id]['date'].values[0]
         return user_sessions.loc[user_sessions['date'] > crit_day]
+
+    def get_super_user_info(self, user_id, session_id):
+        return self.estimatores.loc[self.estimatores['session_id'] == session_id]

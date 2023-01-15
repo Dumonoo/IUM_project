@@ -16,8 +16,10 @@ def validate_system():
     # For Each Model ...
     # For each user ...
     knn = KNNModel()
+    knn.train()
     rd = RandomModelGenres()
-    model = rd
+    model = knn
+    model.train()
     for user in range(101, 151):
         score_avg, tests = validate_user_score(model, user)
         print(f"User: {user} - Avg.Score: {score_avg} in {tests} tests")
