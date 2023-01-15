@@ -5,9 +5,6 @@ from fastapi.responses import HTMLResponse
 from datetime import datetime
 import pandas as pd
 from logger import log_info, log_error
-from models.validation.validation import validate_all_models
-from models.validation.validation import validate_model
-from models.utils.get_user_data import analyse_user
 from models.utils.data_fetcher import DataFetcher
 from models.regression_recommender import RegressionRecommender, RandomRegression
 
@@ -77,13 +74,12 @@ users_group_B = [
 app = FastAPI(title="Recomenndation_API")
 
 # Model preparation
-base_model = RandomModel()
+
+base_model = RandomRegression()
 base_model.train()
-target_model = KNNModel()
+target_model = RegressionRecommender()
 target_model.train()
 
-model = KNNModel()
-model.train()
 
 metadata_columns = ["id", "name", "year"]
 data_fetcher = DataFetcher(metadata_columns)
@@ -100,17 +96,17 @@ def root(request: Request):
 @app.get("/recommendation/{model_name}/{user_id}")
 def get_recommendation(model_name: ModelEnum, user_id: int):
     # TODO change this to function with will return information ready for model
-    ids, timestamp = analyse_user(user_id).get_n_last_liked(10)
+    # ids, timestamp = analyse_user(user_id).get_n_last_liked(10)
     recommended = []
     if model_name is ModelEnum.KNN:
-        recommended = target_model.recommend(ids)
+        recommended = target_model.predict(ids)
 
     if model_name is ModelEnum.Random:
-        recommended = base_model.recommend(ids)
+        recommended = base_model.predict(ids)
     else:
         # Model Random
         log_error(f"Uknown model {model_name.name}")
-        recommended = base_model.recommend(ids)
+        recommended = base_model.predict(ids)
 
     recommended_list = data_fetcher.get_songs(recommended).tolist()
     log_info(
@@ -123,22 +119,22 @@ def get_recommendation(model_name: ModelEnum, user_id: int):
 @app.get("/ab_recommendation/{user_id}")
 def get_ab_recommendation(user_id: int):
     # TODO change this to function with will return information ready for model
-    ids, timestamp = analyse_user(user_id).get_n_last_liked(10)
+    # ids, timestamp = analyse_user(user_id).get_n_last_liked(10)
     recommended = []
     model_name = ""
     if user_id in users_group_A:
         # Group A -> Model Random
-        recommended = base_model.recommend(ids)
+        recommended = base_model.predict(ids)
         model_name = ModelEnum.Random
     if user_id in users_group_B:
         # Group B -> Model KNN
-        recommended = target_model.recommend(ids)
+        recommended = target_model.predict(ids)
         model_name = ModelEnum.KNN
     else:
         # UNKOWN Group -> Model Random
         log_error("The given user is not in any of the groups a and b", user_id=user_id)
         model_name = ModelEnum.Random
-        recommended = base_model.recommend(ids)
+        recommended = base_model.predict(ids)
 
     recommended_list = data_fetcher.get_songs(recommended).tolist()
     log_info(
@@ -150,24 +146,3 @@ def get_ab_recommendation(user_id: int):
     return recommended_list
 
 
-# Additional endpoints for testing purposes
-# Recommend 10 tracks playlist for user_id with selected model using sessions before timestamp
-@app.get("/recommendation_for_timestamp/{model_name}/{timestamp}/{user_id}")
-def get_recommendation_for_timestamp(
-    model_name: ModelEnum, user_id: int, timestamp: datetime
-):
-    ...
-
-
-# Recommend 10 tracks playlist for user_id with selected model using sessions before session_id
-@app.get("/recommendation_for_session_id/{model_name}/{session_id}/{user_id}")
-def get_recommendation_for_session_id(
-    model_name: ModelEnum, user_id: int, session_id: int
-):
-    ...
-
-
-# Validate both all models and return infomation about them
-@app.get("/validate_models/")
-def validate_models():
-    return validate_all_models()
