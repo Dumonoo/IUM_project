@@ -1,10 +1,12 @@
-from sklearn.neighbors import NearestNeighbors
+import pandas as pd
+from sklearn.neighbors import NearestNeighbors, KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
+
 
 from models.utils.data_fetcher import DataFetcher
 
 
-class KNNModel:
+class KNNClassifierModel:
     def __init__(self) -> None:
         self.data_fethcher = DataFetcher(
             [
@@ -26,17 +28,28 @@ class KNNModel:
             ]
         )
         self.scaler = StandardScaler()
-        self.model = NearestNeighbors(
-            n_neighbors=100, metric="cosine", algorithm="brute"
-        )
+        self.knn = KNeighborsClassifier(n_neighbors=10)
+        self.model = NearestNeighbors(n_neighbors=10, algorithm="brute")
 
-    def train(self, user=None):
-        self.data = self.data_fethcher.get_training_data(user)
-        X = self.data_fethcher.get_training_for_songs(self.data)
+    def train(self, train):
+        X = self.data_fethcher.get_training_for_songs(train)
+        y = train["event_type"].values
         X = self.scaler.fit_transform(X)
         self.model.fit(X)
+        self.knn.fit(X, y)
+
+    def predict(self, data):
+        all_tracks = self.data_fethcher.tracks
+        formated = self.data_fethcher.get_training_for_songs(all_tracks)
+        X = self.scaler.transform(formated)
+        classes = self.knn.predict(X)
+        all_tracks["prediction"] = classes
+        return all_tracks[all_tracks["prediction"] != "skip"][["id", "prediction"]]
 
     def recommend(self, ids):
+        predicted = self.predict()
+        return predicted[predicted["prediction"] == "like"]["id"].values
+
         songs = self.data_fethcher.get_songs(ids)
         X = self.scaler.transform(songs)
         distances, indices = self.model.kneighbors(X)

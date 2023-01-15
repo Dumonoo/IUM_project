@@ -39,8 +39,43 @@ class DataFetcher:
             pd.read_json("data/sessions.jsonl", lines=True)
             .dropna(subset=["user_id", "track_id", "event_type"])
             .sort_values(by="timestamp")
-            .drop_duplicates(subset=["user_id", "track_id"], keep="last")
+            # .drop_duplicates(subset=["user_id", "track_id"], keep="last")
         )
+        self.sessions = self.sessions[
+            self.sessions["track_id"].isin(self.tracks["id"].values)
+        ]
+
+    def read_avg_listen(self, user):
+        user_sessions = self.sessions[self.sessions["user_id"] == user]
+        user_tracks = self.tracks[
+            self.tracks["id"].isin(user_sessions["track_id"].values)
+        ]
+        listened = user_tracks.apply(
+            lambda x: self.count_avg_for_track(x, user_sessions), axis=1
+        )
+        return user_tracks, listened
+
+    def count_avg_for_track(self, track, sessions):
+        listened = []
+        df = sessions[sessions["track_id"] == track["id"]]
+        if len(df[df["event_type"] == "like"]):
+            return 1
+        prev_play_time = None
+        for i, row in df.iterrows():
+            if row["event_type"] == "play":
+                listened.append(1)
+                prev_play_time = row["timestamp"]
+            elif row["event_type"] == "skip":
+                if prev_play_time is None:
+                    continue
+                listened.pop()
+                listened.append(
+                    ((row["timestamp"] - prev_play_time).seconds)
+                    / (track["duration_ms"] / 1000)
+                )
+        return sum(listened) / len(listened) if len(listened) else 0
+
+        return 0
 
     def get_all_rated(self, user):
         return self.sessions[self.sessions["user_id"] == user]
@@ -115,6 +150,16 @@ class DataFetcher:
             track_vector = track_data[self.track_columns].values
             tracks_vectors.append(track_vector)
         return tracks_vectors
+
+    def get_user_item_matrix(self):
+        sessions = self.sessions
+        sessions["rating"] = self.sessions.apply(
+            lambda x: {"like": 2, "play": 1, "skip": -1}[x["event_type"]],
+            axis=1,
+        )
+        ratings = sessions.pivot(index="track_id", columns="user_id", values="rating")
+        ratings = ratings.fillna(0)
+        return ratings
 
 
 if __name__ == "__main__":
