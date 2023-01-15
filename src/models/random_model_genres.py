@@ -13,5 +13,5 @@ class RandomModelGenres:
         given_genre_tracks = self.data_obj.get_tracks_of_genres(user_most_popular_genres_in_session)
         # mozna usunac tracki ktore juz sluchal do tej pory
         # return given_genre_tracks.sample(10)["id"].values
-
+    
         return given_genre_tracks.sample(10, weights='popularity')["id"].values
