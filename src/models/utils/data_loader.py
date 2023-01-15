@@ -1,6 +1,7 @@
 import pandas as pd
 from datetime import datetime
 from typing import List
+from collections import Counter
 
 class DataLoader:
     def __init__(self):
@@ -15,16 +16,22 @@ class DataLoader:
         self.sessions_transoformations()
         self.tracks_transoformations()
 
+        # Extra tables
+        self.sessions_with_genres = self.sessions.join(self.get_tracks()[['id', 'id_artist', 'popularity']].set_index('id'), on='track_id').join(self.get_artists()[['id', 'genres']].set_index('id'), on='id_artist')
+        # self.tracks = self.get_tracks()[['id', 'id_artist', 'name']].join(self.get_artists()[['id', 'genres']].set_index('id'), on='id_artist')
+
     # Grabbers ???
     def get_tracks_of_genres(self, genres: List[str])-> List[str]:
         tracks_of_genres = []
         if genres:
-            all_tracks_with_artist_genres = self.get_tracks()[['id', 'id_artist', 'name']].join(self.get_artists()[['id', 'genres']].set_index('id'), on='id_artist')
+            all_tracks_with_artist_genres = self.get_tracks()[['id', 'id_artist', 'name', 'popularity']].join(self.get_artists()[['id', 'genres']].set_index('id'), on='id_artist')
             tracks_of_genres = all_tracks_with_artist_genres[all_tracks_with_artist_genres['genres'].apply(lambda x: any(i in x for i in genres))]
-            tracks_of_genres =  tracks_of_genres[['id', 'name', 'genres']]
+            tracks_of_genres =  tracks_of_genres[['id', 'name', 'genres', 'popularity']]
 
         return tracks_of_genres
 
+    def get_track_popularity(self, id):
+        return self.tracks.loc[self.tracks['id'] == id]['popularity'].values[0]
 
     def get_user_fav_genres(self, user_id: int)-> List[str]:
         return self.get_users().loc[self.get_users()["user_id"] == user_id]['favourite_genres'].values[0]
@@ -33,25 +40,7 @@ class DataLoader:
     def get_user_sessions(self, user_id: int):
         return self.sessions[self.sessions["user_id"] == user_id]
 
-    def get_user_sessions_with_estimations(self, user_id: int):
-        estimations = self.get_user_sessions(user_id)
-        estimations['estimation'] = estimations.apply(lambda x: 1 if x['event_type'] == 'play' or x['event_type'] == 'like'  else 0, axis=1)
-        prev_row = None
-        for index, row in estimations.iterrows():
-            ...
-            if prev_row is None:
-                prev_row = row
-            else:
-                if row['estimation'] == 0:
-                    time_start = prev_row['timestamp']
-                    time_end = row['timestamp']
-                    time_diff_ms = int((time_end - time_start).total_seconds() * 1000)
-                    # narazie linowo -> powinna by logarytmicza przy podstawie 1/2 i podniesiona troche
-                    estimations.loc[index, 'estimation'] = -1 * (1 - (time_diff_ms / self.get_track_length_ms(row['track_id'])))
-                if row['event_type'] != 'like':
-                    prev_row = row
 
-        return estimations
     
     def get_sessions_list_in_order(self, user_id: int):
         return list(self.get_user_sessions(user_id)['session_id'].unique())
@@ -203,9 +192,113 @@ class DataLoader:
     def get_ids_of_given_ids(self, track_indexes):
         return self.tracks.iloc[track_indexes]['id'].values
 
-    # Analysis purposes
-    def get_life(self, user_id:int):
-        user_sessions = self.get_sessions_list_in_order(user_id)
 
-        return user_sessions
+    # Analysis purposes
+    def get_populatirty_stats(self):
+        ret = self.tracks[['popularity']].value_counts()
+        # ret = self.tracks[['popularity']].describe()
+        return ret
+
+    def get_life(self, user_id:int):
+        pd.set_option('display.max_columns', None)
+        pd.set_option('display.expand_frame_repr', False)
+        pd.set_option('max_colwidth', -1)
+        user_sessions = self.get_sessions_list_in_order(user_id)
+        users_estimators = self.get_user_sessions_with_estimations(user_id).join(self.get_tracks()[['id', 'id_artist', 'popularity']].set_index('id'), on='track_id').join(self.get_artists()[['id', 'genres']].set_index('id'), on='id_artist')
+        users_estimators = users_estimators.drop(columns=['id_artist'])
+        # .join(self.get_artists()[['id', 'genres']].set_index('id'), on='id_artist')
+        counter2 = Counter()
+        counter3 = Counter()
+        for session in user_sessions:
+            counter = Counter()
+            session_d = users_estimators.loc[users_estimators['session_id'] == session]
+            session_d = session_d.loc[session_d['event_type'] != 'like']
+            session_d = session_d.loc[session_d['event_type'] != 'skip']
+            for index, row in session_d.iterrows():
+                # print(row['genres'])
+                # for genre in row['genres']:
+                #     counter[genre] += 1
+                # counter2[row['popularity']] += 1    
+
+                counter3[row['track_id']] += 1
+        #     print(counter3, '\n')
+        # print(counter3)
+        c4 = Counter()
+        for k in counter3.values():
+            c4[k] += 1
+        print(c4)
+            # print(session_d[['popularity']].describe())
+            # print(counter)
+            # print(session_d[['session_id', 'track_id', 'estimation', 'popularity',  'event_type', 'genres']])
+        # self.get_tracks()[['id', 'id_artist', 'name']].join(self.get_artists()[['id', 'genres']].set_index('id'), on='id_artist')
+        # print(self.get_user_fav_genres(user_id))
+        # print(counter2)
+        return None 
+        # users_estimators
         ...
+    def get_session_populatirty_stats(self):
+        sessions = self.get_sessions()
+        t = sessions.join(self.get_tracks()[['id', 'id_artist', 'popularity']].set_index('id'), on='track_id').join(self.get_artists()[['id', 'genres']].set_index('id'), on='id_artist')
+        t = t.loc[t['event_type']!='skip']
+        t = t.loc[t['event_type']!='like']
+        popularity_counter = Counter()
+        for i,r in t.iterrows():
+            popularity_counter[r['popularity']] += 1
+
+
+        print(popularity_counter)
+
+    def print_popular_over_sessions(self):
+        all_sessions = self.sessions.loc[self.sessions['event_type'] != 'skip'] 
+        all_sessions = all_sessions.loc[all_sessions['event_type'] != 'like']
+        for date, row in all_sessions.groupby('date', group_keys=True):
+            song_counter = Counter()
+            for index, session in row.iterrows():
+                song_counter[session['track_id']] += 1
+            print("Popularne w danych sesjach: ", song_counter, '\n')
+            # print(row)
+        # print(all_sessions)
+        # print(self.sessions.groupby('date', group_keys=True).apply(lambda x: x).reset_index())
+
+    # Nowy porzadek
+    def calcualte_estaminations(self):
+        # liczy estamination dla wszystkich naraz
+            
+        for i,r in self.get_sessions().groupby('user_id'):
+            print(r)
+
+    def get_user_sessions_with_estimations(self, user_id: int):
+        estimations = self.get_user_sessions(user_id)
+        estimations.loc[:, 'estimation'] = 0
+        estimations.loc[(estimations['event_type'] == 'play') | (estimations['event_type'] == 'like'),'estimation']  = 1
+        
+        # estimations['estimation'] = estimations.apply(lambda x: 1 if x['event_type'] == 'play' or x['event_type'] == 'like'  else 0, axis=1)
+        prev_row = None
+        for index, row in estimations.iterrows():
+            ...
+            if prev_row is None:
+                prev_row = row
+            else:
+                if row['estimation'] == 0:
+                    time_start = prev_row['timestamp']
+                    time_end = row['timestamp']
+                    time_diff_ms = int((time_end - time_start).total_seconds() * 1000)
+                    stosunek = time_diff_ms / self.get_track_length_ms(row['track_id'])
+                    stosunek = min(stosunek, 1)
+                    # narazie linowo -> powinna by logarytmicza przy podstawie 1/2 i podniesiona troche
+                    estimations.loc[index, 'estimation'] = -1 * (1 - (stosunek))
+                if row['event_type'] != 'like':
+                    prev_row = row
+        return estimations
+    
+    def get_session_order(self, user_id: int):
+        return list(self.get_user_sessions(user_id)['session_id'].unique())
+
+    def get_user_popular_genres_in_session(self, user_id:int, session_id:int, n_genres:int)-> List[str]:
+        user_sessions = self.sessions_with_genres.loc[self.sessions_with_genres['session_id'] == session_id]
+        genre_counter = Counter()
+        for i, r in user_sessions.iterrows():
+            for g in r['genres']:
+                genre_counter[g] += 1
+        most_common_genres = [x[0] for x in genre_counter.most_common(n_genres)]
+        return most_common_genres
