@@ -4,6 +4,7 @@ from src.models.utils.data_loader import DataLoader
 from typing import List
 from src.models.random_model_genres import RandomModelGenres
 from src.models.knn_model2 import KNNModel
+from src.models.kmean_model2 import KMeanModel
 
 # Info from N session and check M next session for results -> M = 0 all future sessions TODO
 N_SESSIONS = 3
@@ -15,14 +16,22 @@ data_loader = DataLoader()
 def validate_system():
     # For Each Model ...
     # For each user ...
-    knn = KNNModel()
-    knn.train()
+    # knn = KNNModel()
+    # knn.train()
     rd = RandomModelGenres()
-    model = knn
+    # kmean = KMeanModel()
+    # model = kmean
+    model = rd
     model.train()
+    avg_scores = 0
+    tests_c = 0
+    # for user in range(101, 108):
     for user in range(101, 151):
         score_avg, tests = validate_user_score(model, user)
         print(f"User: {user} - Avg.Score: {score_avg} in {tests} tests")
+        avg_scores += score_avg * tests
+        tests_c += tests
+    print(f"Podsumowanie {avg_scores/tests_c}")
 
 def validate_user_score(model, user_id):
     
@@ -41,7 +50,7 @@ def validate_user_score(model, user_id):
         tests_counter += 1
         recommendations_ids = model.recommend2(user_id, session_id)
         user_score += check_recommendations(recommendations_ids, user_id, session_id)
-        # print(f"Test :{session_id} - {user_score}")
+    #     print(f"Test :{session_id} - {user_score}")
     # print(f"User {user_id} tests_counter{tests_counter} ACR: {user_score/tests_counter}")
     return user_score/tests_counter, tests_counter
 
@@ -61,31 +70,6 @@ def check_recommendations(recommendations: List[str], user_id: int, session_id: 
             score += 2
     return score/len(recommendations)
 
-    # Calculate score over future of user sessions
-
-def recommend(user_id, session_id):
-    ... # mozna zamiast przekazywania session_data_with_marks obliczyc to dla wszysktich userow przy logowaniu 
-    # Na podstawie user_id odnajdujemy sesjie uzytkownika
-    # Wybieramy inreresujaca nas sessje 
-    # oceniamy i wybieramy inreresujace nas id
-    # z modelu wyciagamy liste id podobnych do tych utworow
-    # sortujemy je wzgledem popularnosci i dajemy najpopularniejsze
-
-
-# def validate_model(model):
-#     model.train()
-#     all_tp = 0
-#     all_fp = 0
-#     for user in range(101, 151):
-#         tp, fp = validate_for_user(model, user)
-#         if tp is None:
-#             continue
-#         all_tp += tp
-#         all_fp += fp
-#     if not (all_tp + all_fp):
-#         return 0
-#     precision = all_tp / (all_tp + all_fp)
-#     return precision
 
 
 

@@ -86,11 +86,9 @@ class DataLoader:
         return input_ids, check_ids
 
     def calcate_score(self, recommended_ids:List[str], check_ids):
-        # print(recommended_ids, check_ids)
         score = 0
         for index, row in check_ids[check_ids['track_id'].isin(recommended_ids)].iterrows():
             score += row['estimation']
-        # print("Score: ", score)
         return score/len(recommended_ids)
 
 
@@ -207,7 +205,6 @@ class DataLoader:
         user_sessions = self.get_sessions_list_in_order(user_id)
         users_estimators = self.get_user_sessions_with_estimations(user_id).join(self.get_tracks()[['id', 'id_artist', 'popularity']].set_index('id'), on='track_id').join(self.get_artists()[['id', 'genres']].set_index('id'), on='id_artist')
         users_estimators = users_estimators.drop(columns=['id_artist'])
-        # .join(self.get_artists()[['id', 'genres']].set_index('id'), on='id_artist')
         counter2 = Counter()
         counter3 = Counter()
         for session in user_sessions:
@@ -263,6 +260,19 @@ class DataLoader:
 
     def get_popularity_of_track(self, track_id):
         return self.tracks.loc[self.tracks['id'] == track_id]['popularity']
+
+    def get_most_popular_track_in_n_days(self, session_id, n):
+        crit_day = self.get_sessions().loc[self.get_sessions()['session_id'] == session_id]['date'].values[0]
+        time = timedelta(days=n)
+
+        t = self.get_sessions().loc[(self.get_sessions()['date'] <= crit_day) & (self.get_sessions()['date'] >= (crit_day - time))]
+        t = t.loc[t['event_type'] == 'play']
+        counter = Counter()
+        for i,r in t.iterrows():
+            counter[r['track_id']] += 1
+
+        return counter.most_common(5)
+        
 
     def  get_tracks_popularity(self, track_ids):
         pop = []
